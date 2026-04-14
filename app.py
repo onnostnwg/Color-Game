@@ -209,6 +209,27 @@ input[type=range]::-moz-range-thumb {
   text-align: center;
   margin-bottom: 4px;
 }
+
+.download-btn {
+  padding: 12px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  background: white;
+  color: black;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.download-row {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 22px;
+  flex-wrap: wrap;
+}
 </style>
 
 <div style="font-family:sans-serif; display:flex; flex-direction:column; align-items:center; gap:30px; color:white;">
@@ -281,8 +302,8 @@ input[type=range]::-moz-range-thumb {
         </div>
       </div>
 
-      <div id="actionArea" style="display:none; justify-content:center; margin-top:6px;">
-        <button id="actionBtn" class="primary-btn">
+      <div id="playActionArea" style="display:none; justify-content:center; margin-top:6px;">
+        <button id="playActionBtn" class="primary-btn">
           See results
         </button>
       </div>
@@ -394,6 +415,17 @@ input[type=range]::-moz-range-thumb {
               Time spent adjusting: 0.00s
             </div>
           </div>
+
+          <div id="resultsActionArea" style="
+            display:none;
+            justify-content:center;
+            margin-top:22px;
+            width:100%;
+          ">
+            <button id="resultsActionBtn" class="primary-btn">
+              Next round
+            </button>
+          </div>
         </div>
       </div>
 
@@ -419,6 +451,11 @@ input[type=range]::-moz-range-thumb {
           margin-top:24px;
         "></div>
 
+        <div class="download-row">
+          <a id="downloadRoundsBtn" class="download-btn" download="round_level_results.csv">Download round-level CSV</a>
+          <a id="downloadSessionBtn" class="download-btn" download="session_level_results.csv">Download session-level CSV</a>
+        </div>
+
         <div style="display:flex; justify-content:center; margin-top:24px;">
           <button id="restartBtn" class="primary-btn">
             Play again
@@ -435,11 +472,22 @@ const TOTAL_ROUNDS = 5;
 
 let currentRound = 1;
 let roundResults = [];
+let sessionResults = [];
 let targetHSV = randomTargetHSV();
 let countdownInterval = null;
 let revealTimeout = null;
 let adjustStartTime = null;
 let playerName = "";
+let sessionId = "";
+let currentRoundInitialHSV = null;
+
+function generateSessionId() {
+  return "S_" + Date.now() + "_" + Math.random().toString(36).slice(2, 10);
+}
+
+function nowIso() {
+  return new Date().toISOString();
+}
 
 function randomTargetHSV() {
   return {
@@ -489,7 +537,7 @@ function hsvToXyz(h, s, v) {
 
   const x = r * 0.4124564 + g * 0.3575761 + b * 0.1804375;
   const y = r * 0.2126729 + g * 0.7151522 + b * 0.0721750;
-  const z = r * 0.0193339 + b * 0.9503041 + g * 0.1191920;
+  const z = r * 0.0193339 + g * 0.1191920 + b * 0.9503041;
 
   return [x, y, z];
 }
@@ -687,6 +735,84 @@ function updateReadouts() {
   document.getElementById("vValue").textContent = `${Math.round(v)}%`;
 }
 
+function csvEscape(value) {
+  const s = String(value ?? "");
+  return '"' + s.replace(/"/g, '""') + '"';
+}
+
+function buildCsv(rows, columns) {
+  const header = columns.join(",");
+  const body = rows.map(row => columns.map(col => csvEscape(row[col])).join(",")).join("\\n");
+  return header + "\\n" + body;
+}
+
+function setDownloadLink(elementId, csvText, filename) {
+  const blob = new Blob([csvText], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.getElementById(elementId);
+  link.href = url;
+  link.download = filename;
+}
+
+function prepareCsvDownloads() {
+  const roundColumns = [
+    "participant_id",
+    "session_id",
+    "session_start_timestamp",
+    "round_timestamp",
+    "round_number",
+    "total_rounds",
+    "target_h",
+    "target_s",
+    "target_v",
+    "target_hex",
+    "initial_h",
+    "initial_s",
+    "initial_v",
+    "guess_h",
+    "guess_s",
+    "guess_v",
+    "guess_hex",
+    "delta_e_ciede2000",
+    "hue_diff_deg",
+    "score_base",
+    "score_recovery",
+    "score_penalty",
+    "score_final",
+    "elapsed_seconds",
+    "completed_game"
+  ];
+
+  const sessionColumns = [
+    "participant_id",
+    "session_id",
+    "session_start_timestamp",
+    "session_end_timestamp",
+    "total_rounds",
+    "completed_rounds",
+    "completed_game",
+    "total_score",
+    "average_score",
+    "total_adjust_time_seconds",
+    "mean_adjust_time_seconds"
+  ];
+
+  const roundCsv = buildCsv(roundResults, roundColumns);
+  const sessionCsv = buildCsv(sessionResults, sessionColumns);
+
+  setDownloadLink(
+    "downloadRoundsBtn",
+    roundCsv,
+    `${sessionId}_round_level_results.csv`
+  );
+
+  setDownloadLink(
+    "downloadSessionBtn",
+    sessionCsv,
+    `${sessionId}_session_level_results.csv`
+  );
+}
+
 function saveRoundResult() {
   const h = parseFloat(document.getElementById("h").value) / 360;
   const s = parseFloat(document.getElementById("s").value) / 100;
@@ -703,7 +829,33 @@ function saveRoundResult() {
   const targetHex = hsvToHex(targetHSV.h, targetHSV.s, targetHSV.v);
   const playerHex = hsvToHex(h, s, v);
 
-  roundResults.push({
+  const row = {
+    participant_id: playerName,
+    session_id: sessionId,
+    session_start_timestamp: sessionResults.length ? sessionResults[sessionResults.length - 1].session_start_timestamp : currentSessionStartTimestamp,
+    round_timestamp: nowIso(),
+    round_number: currentRound,
+    total_rounds: TOTAL_ROUNDS,
+    target_h: targetHSV.h.toFixed(6),
+    target_s: targetHSV.s.toFixed(6),
+    target_v: targetHSV.v.toFixed(6),
+    target_hex: targetHex,
+    initial_h: currentRoundInitialHSV.h.toFixed(6),
+    initial_s: currentRoundInitialHSV.s.toFixed(6),
+    initial_v: currentRoundInitialHSV.v.toFixed(6),
+    guess_h: h.toFixed(6),
+    guess_s: s.toFixed(6),
+    guess_v: v.toFixed(6),
+    guess_hex: playerHex,
+    delta_e_ciede2000: score.dE.toFixed(6),
+    hue_diff_deg: score.hueDiff.toFixed(6),
+    score_base: score.base.toFixed(6),
+    score_recovery: score.recovery.toFixed(6),
+    score_penalty: score.penalty.toFixed(6),
+    score_final: score.finalScore.toFixed(6),
+    elapsed_seconds: elapsedSeconds.toFixed(6),
+    completed_game: currentRound === TOTAL_ROUNDS ? "1" : "0",
+
     round: currentRound,
     targetHSV: { ...targetHSV },
     guessHSV,
@@ -711,15 +863,18 @@ function saveRoundResult() {
     playerHex,
     elapsedSeconds,
     score
-  });
+  };
 
-  return roundResults[roundResults.length - 1];
+  roundResults.push(row);
+  return row;
 }
+
+let currentSessionStartTimestamp = "";
 
 function showResults() {
   const roundData = saveRoundResult();
 
-  document.getElementById("actionArea").style.display = "none";
+  document.getElementById("playActionArea").style.display = "none";
   document.getElementById("targetColorBox").style.background = roundData.targetHex;
   document.getElementById("playerColorBox").style.background = roundData.playerHex;
 
@@ -739,10 +894,10 @@ function showResults() {
   document.getElementById("controlsSection").style.display = "none";
   document.getElementById("results").style.display = "block";
 
-  const btn = document.getElementById("actionBtn");
+  const btn = document.getElementById("resultsActionBtn");
   btn.textContent = currentRound < TOTAL_ROUNDS ? "Next round" : "See final results";
   btn.onclick = currentRound < TOTAL_ROUNDS ? startNextRound : showFinalSummary;
-  document.getElementById("actionArea").style.display = "flex";
+  document.getElementById("resultsActionArea").style.display = "flex";
 }
 
 function startNextRound() {
@@ -750,6 +905,7 @@ function startNextRound() {
   targetHSV = randomTargetHSV();
   setTargetBoxColor();
   adjustStartTime = null;
+  currentRoundInitialHSV = null;
   updateRoundIndicators();
 
   document.getElementById("countdownPhase").style.display = "block";
@@ -758,8 +914,9 @@ function startNextRound() {
   document.getElementById("targetPhase").style.display = "none";
   document.getElementById("playPhase").style.display = "none";
   document.getElementById("results").style.display = "none";
+  document.getElementById("resultsActionArea").style.display = "none";
   document.getElementById("finalSummary").style.display = "none";
-  document.getElementById("actionArea").style.display = "none";
+  document.getElementById("playActionArea").style.display = "none";
 
   document.getElementById("playerColorSection").style.display = "flex";
   document.getElementById("controlsSection").style.display = "flex";
@@ -769,16 +926,39 @@ function startNextRound() {
 
 function showFinalSummary() {
   document.getElementById("results").style.display = "none";
-  document.getElementById("actionArea").style.display = "none";
+  document.getElementById("resultsActionArea").style.display = "none";
+  document.getElementById("playActionArea").style.display = "none";
   document.getElementById("playerColorSection").style.display = "none";
   document.getElementById("controlsSection").style.display = "none";
 
   const summaryRows = document.getElementById("summaryRows");
   summaryRows.innerHTML = "";
 
-  const totalScore = roundResults.reduce((sum, r) => sum + r.score.finalScore, 0);
+  const totalScore = roundResults.reduce((sum, r) => sum + parseFloat(r.score_final), 0);
   const avgScore = roundResults.length ? totalScore / roundResults.length : 0;
-  const totalTime = roundResults.reduce((sum, r) => sum + r.elapsedSeconds, 0);
+  const totalTime = roundResults.reduce((sum, r) => sum + parseFloat(r.elapsed_seconds), 0);
+  const meanTime = roundResults.length ? totalTime / roundResults.length : 0;
+  const sessionEndTimestamp = nowIso();
+
+  const sessionRow = {
+    participant_id: playerName,
+    session_id: sessionId,
+    session_start_timestamp: currentSessionStartTimestamp,
+    session_end_timestamp: sessionEndTimestamp,
+    total_rounds: TOTAL_ROUNDS,
+    completed_rounds: roundResults.length,
+    completed_game: roundResults.length === TOTAL_ROUNDS ? "1" : "0",
+    total_score: totalScore.toFixed(6),
+    average_score: avgScore.toFixed(6),
+    total_adjust_time_seconds: totalTime.toFixed(6),
+    mean_adjust_time_seconds: meanTime.toFixed(6)
+  };
+
+  sessionResults = [sessionRow];
+  roundResults = roundResults.map(r => ({
+    ...r,
+    completed_game: roundResults.length === TOTAL_ROUNDS ? "1" : "0"
+  }));
 
   document.getElementById("playerNameFinal").textContent = `Player: ${playerName}`;
   document.getElementById("finalStats").textContent =
@@ -826,13 +1006,14 @@ function showFinalSummary() {
           </div>
         </div>
 
-        <div class="summary-cell" style="font-weight:700;">${r.score.finalScore.toFixed(2)}</div>
-        <div class="summary-cell">${r.elapsedSeconds.toFixed(2)}s</div>
+        <div class="summary-cell" style="font-weight:700;">${parseFloat(r.score_final).toFixed(2)}</div>
+        <div class="summary-cell">${parseFloat(r.elapsed_seconds).toFixed(2)}s</div>
       </div>
     `;
     summaryRows.appendChild(row);
   });
 
+  prepareCsvDownloads();
   document.getElementById("finalSummary").style.display = "block";
 }
 
@@ -842,9 +1023,13 @@ function resetGame() {
 
   currentRound = 1;
   roundResults = [];
+  sessionResults = [];
   targetHSV = randomTargetHSV();
   setTargetBoxColor();
   adjustStartTime = null;
+  currentRoundInitialHSV = null;
+  sessionId = generateSessionId();
+  currentSessionStartTimestamp = "";
 
   document.getElementById("startScreen").style.display = "flex";
   document.getElementById("gameContainer").style.display = "none";
@@ -854,8 +1039,9 @@ function resetGame() {
   document.getElementById("targetPhase").style.display = "none";
   document.getElementById("playPhase").style.display = "none";
   document.getElementById("results").style.display = "none";
+  document.getElementById("resultsActionArea").style.display = "none";
   document.getElementById("finalSummary").style.display = "none";
-  document.getElementById("actionArea").style.display = "none";
+  document.getElementById("playActionArea").style.display = "none";
 
   updateRoundIndicators();
 }
@@ -876,9 +1062,13 @@ function beginGame() {
 
   currentRound = 1;
   roundResults = [];
+  sessionResults = [];
   targetHSV = randomTargetHSV();
   setTargetBoxColor();
   adjustStartTime = null;
+  currentRoundInitialHSV = null;
+  sessionId = generateSessionId();
+  currentSessionStartTimestamp = nowIso();
   updateRoundIndicators();
 
   document.getElementById("startScreen").style.display = "none";
@@ -889,8 +1079,9 @@ function beginGame() {
   document.getElementById("targetPhase").style.display = "none";
   document.getElementById("playPhase").style.display = "none";
   document.getElementById("results").style.display = "none";
+  document.getElementById("resultsActionArea").style.display = "none";
   document.getElementById("finalSummary").style.display = "none";
-  document.getElementById("actionArea").style.display = "none";
+  document.getElementById("playActionArea").style.display = "none";
 
   startCountdown();
 }
@@ -903,6 +1094,12 @@ function setRandomColor() {
   document.getElementById("h").value = Math.round(h);
   document.getElementById("s").value = Math.round(s);
   document.getElementById("v").value = Math.round(v);
+
+  currentRoundInitialHSV = {
+    h: Math.round(h) / 360,
+    s: Math.round(s) / 100,
+    v: Math.round(v) / 100
+  };
 
   updateReadouts();
 }
@@ -944,6 +1141,7 @@ document.getElementById("s").addEventListener("input", handleSliderInput);
 document.getElementById("v").addEventListener("input", handleSliderInput);
 document.getElementById("restartBtn").addEventListener("click", resetGame);
 document.getElementById("startGameBtn").addEventListener("click", beginGame);
+document.getElementById("playActionBtn").addEventListener("click", showResults);
 document.getElementById("playerNameInput").addEventListener("keydown", (e) => {
   if (e.key === "Enter") beginGame();
 });
@@ -979,13 +1177,10 @@ function startCountdown() {
         document.getElementById("playerColorSection").style.display = "flex";
         document.getElementById("controlsSection").style.display = "flex";
         document.getElementById("results").style.display = "none";
+        document.getElementById("resultsActionArea").style.display = "none";
         document.getElementById("finalSummary").style.display = "none";
 
-        const btn = document.getElementById("actionBtn");
-        btn.textContent = "See results";
-        btn.onclick = showResults;
-
-        document.getElementById("actionArea").style.display = "flex";
+        document.getElementById("playActionArea").style.display = "flex";
 
         setRandomColor();
         updateColor();
@@ -996,6 +1191,7 @@ function startCountdown() {
   }, 1000);
 }
 
+sessionId = generateSessionId();
 updateRoundIndicators();
 setTargetBoxColor();
 </script>
@@ -1004,4 +1200,4 @@ setTargetBoxColor();
 left_spacer, main_col, right_spacer = st.columns([1.6, 6, 1.0])
 
 with main_col:
-    components.html(html, height=1600)
+    components.html(html, height=1750)
