@@ -11,21 +11,23 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-html = """
+APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmuZRNR9qR1sFFPe7TMeRrAJo6sBkVSRkmftl-wq5hDMSVOmFbNLzBK_Sfj2QnW6a5/exec"
+
+html = f"""
 <style>
-input[type=range] {
+input[type=range] {{
   -webkit-appearance: none;
   height: 18px;
   border-radius: 10px;
   outline: none;
-}
+}}
 
-input[type=range]::-webkit-slider-runnable-track {
+input[type=range]::-webkit-slider-runnable-track {{
   height: 18px;
   border-radius: 10px;
-}
+}}
 
-input[type=range]::-webkit-slider-thumb {
+input[type=range]::-webkit-slider-thumb {{
   -webkit-appearance: none;
   width: 28px;
   height: 28px;
@@ -33,119 +35,119 @@ input[type=range]::-webkit-slider-thumb {
   background: white;
   cursor: pointer;
   margin-top: -5px;
-}
+}}
 
-input[type=range]::-moz-range-track {
+input[type=range]::-moz-range-track {{
   height: 18px;
   border-radius: 10px;
-}
+}}
 
-input[type=range]::-moz-range-thumb {
+input[type=range]::-moz-range-thumb {{
   width: 28px;
   height: 28px;
   border-radius: 50%;
   background: white;
   cursor: pointer;
-}
+}}
 
-.label-row {
+.label-row {{
   display: flex;
   justify-content: space-between;
   margin-bottom: 6px;
   font-size: 14px;
   font-weight: 600;
-}
+}}
 
-.value-readout {
+.value-readout {{
   font-family: monospace;
   opacity: 0.9;
-}
+}}
 
-.result-swatch {
+.result-swatch {{
   width: 96px;
   height: 96px;
   border-radius: 14px;
   border: 2px solid rgba(255,255,255,0.15);
   box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-}
+}}
 
-.result-label {
+.result-label {{
   font-size: 13px;
   font-weight: 600;
   margin-bottom: 8px;
   text-align: center;
   color: rgba(255,255,255,0.95);
-}
+}}
 
-.summary-card {
+.summary-card {{
   width: 100%;
   background: #242424;
   border: 1px solid #444;
   border-radius: 14px;
   padding: 16px;
   box-sizing: border-box;
-}
+}}
 
-.summary-grid {
+.summary-grid {{
   display: grid;
   grid-template-columns: 74px 1.35fr 1.35fr 90px 90px;
   gap: 12px;
   align-items: center;
-}
+}}
 
-.summary-head {
+.summary-head {{
   font-weight: 700;
   opacity: 0.95;
   font-size: 14px;
-}
+}}
 
-.summary-cell {
+.summary-cell {{
   font-size: 14px;
   opacity: 0.95;
-}
+}}
 
-.mini-swatch-wrap {
+.mini-swatch-wrap {{
   display: flex;
   gap: 14px;
   align-items: center;
-}
+}}
 
-.mini-swatch-block {
+.mini-swatch-block {{
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
-}
+}}
 
-.mini-swatch {
+.mini-swatch {{
   width: 42px;
   height: 42px;
   border-radius: 10px;
   border: 1px solid rgba(255,255,255,0.2);
-}
+}}
 
-.phase-title {
+.phase-title {{
   font-size: 24px;
   font-weight: 800;
   margin-bottom: 6px;
   text-align: center;
-}
+}}
 
-.phase-subtitle {
+.phase-subtitle {{
   font-size: 16px;
   opacity: 0.85;
   text-align: center;
-}
+}}
 
-.compact-color-line {
+.compact-color-line {{
   font-size: 12px;
   opacity: 0.9;
   text-align: center;
   line-height: 1.35;
   white-space: nowrap;
-}
+}}
 
-.start-screen {
+.start-screen {{
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -153,21 +155,21 @@ input[type=range]::-moz-range-thumb {
   margin-top: 140px;
   color: white;
   font-family: sans-serif;
-}
+}}
 
-.start-title {
+.start-title {{
   font-size: 42px;
   font-weight: 800;
   text-align: center;
-}
+}}
 
-.start-subtitle {
+.start-subtitle {{
   font-size: 16px;
   opacity: 0.85;
   text-align: center;
-}
+}}
 
-.name-input {
+.name-input {{
   width: 360px;
   max-width: 90vw;
   padding: 14px 16px;
@@ -178,13 +180,13 @@ input[type=range]::-moz-range-thumb {
   color: white;
   outline: none;
   box-sizing: border-box;
-}
+}}
 
-.name-input::placeholder {
+.name-input::placeholder {{
   color: rgba(255,255,255,0.45);
-}
+}}
 
-.primary-btn {
+.primary-btn {{
   padding: 12px 18px;
   font-size: 16px;
   font-weight: 600;
@@ -193,24 +195,24 @@ input[type=range]::-moz-range-thumb {
   cursor: pointer;
   background: white;
   color: black;
-}
+}}
 
-.validation-text {
+.validation-text {{
   min-height: 22px;
   font-size: 14px;
   color: #ff8d8d;
   text-align: center;
-}
+}}
 
-.player-name-banner {
+.player-name-banner {{
   font-size: 15px;
   font-weight: 600;
   opacity: 0.9;
   text-align: center;
   margin-bottom: 4px;
-}
+}}
 
-.download-btn {
+.download-btn {{
   padding: 12px 18px;
   font-size: 15px;
   font-weight: 600;
@@ -221,15 +223,23 @@ input[type=range]::-moz-range-thumb {
   color: black;
   text-decoration: none;
   display: inline-block;
-}
+}}
 
-.download-row {
+.download-row {{
   display: flex;
   justify-content: center;
   gap: 14px;
   margin-top: 22px;
   flex-wrap: wrap;
-}
+}}
+
+.save-status {{
+  margin-top: 14px;
+  font-size: 14px;
+  opacity: 0.9;
+  text-align: center;
+  min-height: 20px;
+}}
 </style>
 
 <div style="font-family:sans-serif; display:flex; flex-direction:column; align-items:center; gap:30px; color:white;">
@@ -452,9 +462,11 @@ input[type=range]::-moz-range-thumb {
         "></div>
 
         <div class="download-row">
-          <a id="downloadRoundsBtn" class="download-btn" download="round_level_results.csv">Download round-level CSV</a>
-          <a id="downloadSessionBtn" class="download-btn" download="session_level_results.csv">Download session-level CSV</a>
+          <a id="downloadRoundsBtn" class="download-btn" download="round_level_results.tsv">Download rounds file</a>
+          <a id="downloadSessionBtn" class="download-btn" download="game_level_results.tsv">Download game file</a>
         </div>
+
+        <div id="saveStatus" class="save-status"></div>
 
         <div style="display:flex; justify-content:center; margin-top:24px;">
           <button id="restartBtn" class="primary-btn">
@@ -469,6 +481,7 @@ input[type=range]::-moz-range-thumb {
 
 <script>
 const TOTAL_ROUNDS = 5;
+const APPS_SCRIPT_URL = {APPS_SCRIPT_URL!r};
 
 let currentRound = 1;
 let roundResults = [];
@@ -480,24 +493,26 @@ let adjustStartTime = null;
 let playerName = "";
 let sessionId = "";
 let currentRoundInitialHSV = null;
+let currentSessionStartTimestamp = "";
+let resultsSaved = false;
 
-function generateSessionId() {
+function generateSessionId() {{
   return "S_" + Date.now() + "_" + Math.random().toString(36).slice(2, 10);
-}
+}}
 
-function nowIso() {
+function nowIso() {{
   return new Date().toISOString();
-}
+}}
 
-function randomTargetHSV() {
-  return {
+function randomTargetHSV() {{
+  return {{
     h: Math.random(),
     s: 0.5 + Math.random() * 0.5,
     v: 0.5 + Math.random() * 0.5
-  };
-}
+  }};
+}}
 
-function hsvToRgb(h, s, v) {
+function hsvToRgb(h, s, v) {{
   let r, g, b;
   let i = Math.floor(h * 6);
   let f = h * 6 - i;
@@ -505,31 +520,31 @@ function hsvToRgb(h, s, v) {
   let q = v * (1 - f * s);
   let t = v * (1 - (1 - f) * s);
 
-  switch (i % 6) {
+  switch (i % 6) {{
     case 0: r = v; g = t; b = p; break;
     case 1: r = q; g = v; b = p; break;
     case 2: r = p; g = v; b = t; break;
     case 3: r = p; g = q; b = v; break;
     case 4: r = t; g = p; b = v; break;
     case 5: r = v; g = p; b = q; break;
-  }
+  }}
 
   return [
     Math.round(r * 255),
     Math.round(g * 255),
     Math.round(b * 255)
   ];
-}
+}}
 
-function hsvToXyz(h, s, v) {
+function hsvToXyz(h, s, v) {{
   const [r255, g255, b255] = hsvToRgb(h, s, v);
   let r = r255 / 255;
   let g = g255 / 255;
   let b = b255 / 255;
 
-  function srgbToLinear(c) {
+  function srgbToLinear(c) {{
     return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
-  }
+  }}
 
   r = srgbToLinear(r);
   g = srgbToLinear(g);
@@ -540,19 +555,19 @@ function hsvToXyz(h, s, v) {
   const z = r * 0.0193339 + g * 0.1191920 + b * 0.9503041;
 
   return [x, y, z];
-}
+}}
 
-function xyzToLab(x, y, z) {
+function xyzToLab(x, y, z) {{
   const Xn = 0.95047;
   const Yn = 1.00000;
   const Zn = 1.08883;
 
-  function f(t) {
+  function f(t) {{
     const delta = 6 / 29;
     return t > Math.pow(delta, 3)
       ? Math.cbrt(t)
       : (t / (3 * delta * delta)) + 4 / 29;
-  }
+  }}
 
   const fx = f(x / Xn);
   const fy = f(y / Yn);
@@ -563,14 +578,14 @@ function xyzToLab(x, y, z) {
   const b = 200 * (fy - fz);
 
   return [L, a, b];
-}
+}}
 
-function hsvToLab(h, s, v) {
+function hsvToLab(h, s, v) {{
   const [x, y, z] = hsvToXyz(h, s, v);
   return xyzToLab(x, y, z);
-}
+}}
 
-function ciede2000(lab1, lab2) {
+function ciede2000(lab1, lab2) {{
   const [L1, a1, b1] = lab1;
   const [L2, a2, b2] = lab2;
 
@@ -592,12 +607,12 @@ function ciede2000(lab1, lab2) {
   const C1p = Math.sqrt(a1p * a1p + b1 * b1);
   const C2p = Math.sqrt(a2p * a2p + b2 * b2);
 
-  function hpFun(x, y) {
+  function hpFun(x, y) {{
     if (x === 0 && y === 0) return 0;
     let h = Math.atan2(y, x) * 180 / Math.PI;
     if (h < 0) h += 360;
     return h;
-  }
+  }}
 
   const h1p = hpFun(a1p, b1);
   const h2p = hpFun(a2p, b2);
@@ -606,15 +621,15 @@ function ciede2000(lab1, lab2) {
   const dCp = C2p - C1p;
 
   let dhp = 0;
-  if (C1p * C2p === 0) {
+  if (C1p * C2p === 0) {{
     dhp = 0;
-  } else if (Math.abs(h2p - h1p) <= 180) {
+  }} else if (Math.abs(h2p - h1p) <= 180) {{
     dhp = h2p - h1p;
-  } else if (h2p <= h1p) {
+  }} else if (h2p <= h1p) {{
     dhp = h2p - h1p + 360;
-  } else {
+  }} else {{
     dhp = h2p - h1p - 360;
-  }
+  }}
 
   const dHp = 2 * Math.sqrt(C1p * C2p) * Math.sin((dhp / 2) * Math.PI / 180);
 
@@ -622,15 +637,15 @@ function ciede2000(lab1, lab2) {
   const Cbarp = (C1p + C2p) / 2;
 
   let hbarp = 0;
-  if (C1p * C2p === 0) {
+  if (C1p * C2p === 0) {{
     hbarp = h1p + h2p;
-  } else if (Math.abs(h1p - h2p) <= 180) {
+  }} else if (Math.abs(h1p - h2p) <= 180) {{
     hbarp = (h1p + h2p) / 2;
-  } else if ((h1p + h2p) < 360) {
+  }} else if ((h1p + h2p) < 360) {{
     hbarp = (h1p + h2p + 360) / 2;
-  } else {
+  }} else {{
     hbarp = (h1p + h2p - 360) / 2;
-  }
+  }}
 
   const T =
     1
@@ -655,17 +670,17 @@ function ciede2000(lab1, lab2) {
   );
 
   return dE;
-}
+}}
 
-function hueDiffDegrees(h1, h2) {
+function hueDiffDegrees(h1, h2) {{
   const deg1 = h1 * 360;
   const deg2 = h2 * 360;
   let diff = Math.abs(deg1 - deg2);
   if (diff > 180) diff = 360 - diff;
   return diff;
-}
+}}
 
-function scoreRound(target, guess) {
+function scoreRound(target, guess) {{
   const targetLab = hsvToLab(target.h, target.s, target.v);
   const guessLab = hsvToLab(guess.h, guess.s, guess.v);
 
@@ -685,76 +700,81 @@ function scoreRound(target, guess) {
 
   const finalScore = Math.max(0, Math.min(10, base + recovery - penalty));
 
-  return {
+  return {{
     dE,
     base,
     recovery,
     penalty,
     finalScore,
     hueDiff
-  };
-}
+  }};
+}}
 
-function toHex(x) {
+function toHex(x) {{
   return x.toString(16).padStart(2, "0");
-}
+}}
 
-function hsvToHex(h, s, v) {
+function hsvToHex(h, s, v) {{
   const [r, g, b] = hsvToRgb(h, s, v);
   return "#" + toHex(r) + toHex(g) + toHex(b);
-}
+}}
 
-function formatHSV(h, s, v) {
+function formatHSV(h, s, v) {{
   return `
-    <div style="text-align:center;">Hue: ${(h * 360).toFixed(0)}°</div>
-    <div style="text-align:center;">Saturation: ${(s * 100).toFixed(0)}%</div>
-    <div style="text-align:center;">Brightness: ${(v * 100).toFixed(0)}%</div>
+    <div style="text-align:center;">Hue: ${{(h * 360).toFixed(0)}}°</div>
+    <div style="text-align:center;">Saturation: ${{(s * 100).toFixed(0)}}%</div>
+    <div style="text-align:center;">Brightness: ${{(v * 100).toFixed(0)}}%</div>
   `;
-}
+}}
 
-function formatHSVSingleLine(h, s, v) {
-  return `H ${(h * 360).toFixed(0)}° • S ${(s * 100).toFixed(0)}% • B ${(v * 100).toFixed(0)}%`;
-}
+function formatHSVSingleLine(h, s, v) {{
+  return `H ${{(h * 360).toFixed(0)}}° • S ${{(s * 100).toFixed(0)}}% • B ${{(v * 100).toFixed(0)}}%`;
+}}
 
-function setTargetBoxColor() {
+function setTargetBoxColor() {{
   const hex = hsvToHex(targetHSV.h, targetHSV.s, targetHSV.v);
   document.getElementById("targetBox").style.background = hex;
-}
+}}
 
-function updateRoundIndicators() {
-  document.getElementById("roundResultHeading").textContent = `Round ${currentRound} Results`;
-}
+function updateRoundIndicators() {{
+  document.getElementById("roundResultHeading").textContent = `Round ${{currentRound}} Results`;
+}}
 
-function updateReadouts() {
+function updateReadouts() {{
   const h = parseFloat(document.getElementById("h").value);
   const s = parseFloat(document.getElementById("s").value);
   const v = parseFloat(document.getElementById("v").value);
 
-  document.getElementById("hValue").textContent = `${Math.round(h)}°`;
-  document.getElementById("sValue").textContent = `${Math.round(s)}%`;
-  document.getElementById("vValue").textContent = `${Math.round(v)}%`;
-}
+  document.getElementById("hValue").textContent = `${{Math.round(h)}}°`;
+  document.getElementById("sValue").textContent = `${{Math.round(s)}}%`;
+  document.getElementById("vValue").textContent = `${{Math.round(v)}}%`;
+}}
 
-function csvEscape(value) {
-  const s = String(value ?? "");
-  return '"' + s.replace(/"/g, '""') + '"';
-}
+function tsvEscape(value) {{
+  return String(value ?? "").replace(/\\t/g, " ").replace(/\\r?\\n/g, " ");
+}}
 
-function buildCsv(rows, columns) {
-  const header = columns.join(",");
-  const body = rows.map(row => columns.map(col => csvEscape(row[col])).join(",")).join("\\n");
-  return header + "\\n" + body;
-}
+function buildTsv(rows, columns) {{
+  const lines = [];
+  lines.push(columns.join("\\t"));
+  for (const row of rows) {{
+    lines.push(columns.map(col => tsvEscape(row[col])).join("\\t"));
+  }}
+  return lines.join("\\r\\n");
+}}
 
-function setDownloadLink(elementId, csvText, filename) {
-  const blob = new Blob([csvText], { type: "text/csv;charset=utf-8;" });
+function setDownloadLink(elementId, text, filename) {{
+  const utf8Bom = "\\uFEFF";
+  const blob = new Blob([utf8Bom, text], {{
+    type: "text/tab-separated-values;charset=utf-8;"
+  }});
   const url = URL.createObjectURL(blob);
   const link = document.getElementById(elementId);
   link.href = url;
   link.download = filename;
-}
+}}
 
-function prepareCsvDownloads() {
+function prepareTsvDownloads() {{
   const roundColumns = [
     "participant_id",
     "session_id",
@@ -797,28 +817,71 @@ function prepareCsvDownloads() {
     "mean_adjust_time_seconds"
   ];
 
-  const roundCsv = buildCsv(roundResults, roundColumns);
-  const sessionCsv = buildCsv(sessionResults, sessionColumns);
+  const roundTsv = buildTsv(roundResults, roundColumns);
+  const sessionTsv = buildTsv(sessionResults, sessionColumns);
 
   setDownloadLink(
     "downloadRoundsBtn",
-    roundCsv,
-    `${sessionId}_round_level_results.csv`
+    roundTsv,
+    `${{sessionId}}_round_level_results.tsv`
   );
 
   setDownloadLink(
     "downloadSessionBtn",
-    sessionCsv,
-    `${sessionId}_session_level_results.csv`
+    sessionTsv,
+    `${{sessionId}}_game_level_results.tsv`
   );
-}
+}}
 
-function saveRoundResult() {
+function setSaveStatus(text) {{
+  document.getElementById("saveStatus").textContent = text;
+}}
+
+async function saveResultsToGoogleSheets(gameRow, roundRows) {{
+  setSaveStatus("Saving results to Google Sheets...");
+
+  const payload = {{
+    type: "batch",
+    game: gameRow,
+    rounds: roundRows
+  }};
+
+  try {{
+    const response = await fetch(APPS_SCRIPT_URL, {{
+      method: "POST",
+      headers: {{
+        "Content-Type": "text/plain;charset=utf-8"
+      }},
+      body: JSON.stringify(payload)
+    }});
+
+    const text = await response.text();
+    let data = null;
+
+    try {{
+      data = JSON.parse(text);
+    }} catch (err) {{
+      throw new Error("Non-JSON response: " + text);
+    }}
+
+    if (!response.ok || !data.ok) {{
+      throw new Error(data && data.error ? data.error : "Unknown save error");
+    }}
+
+    resultsSaved = true;
+    setSaveStatus("Saved to Google Sheets.");
+  }} catch (err) {{
+    console.error(err);
+    setSaveStatus("Could not save to Google Sheets. Files are still available for download.");
+  }}
+}}
+
+function saveRoundResult() {{
   const h = parseFloat(document.getElementById("h").value) / 360;
   const s = parseFloat(document.getElementById("s").value) / 100;
   const v = parseFloat(document.getElementById("v").value) / 100;
 
-  const guessHSV = { h, s, v };
+  const guessHSV = {{ h, s, v }};
   const score = scoreRound(targetHSV, guessHSV);
 
   const adjustEndTime = performance.now();
@@ -829,10 +892,10 @@ function saveRoundResult() {
   const targetHex = hsvToHex(targetHSV.h, targetHSV.s, targetHSV.v);
   const playerHex = hsvToHex(h, s, v);
 
-  const row = {
+  const row = {{
     participant_id: playerName,
     session_id: sessionId,
-    session_start_timestamp: sessionResults.length ? sessionResults[sessionResults.length - 1].session_start_timestamp : currentSessionStartTimestamp,
+    session_start_timestamp: currentSessionStartTimestamp,
     round_timestamp: nowIso(),
     round_number: currentRound,
     total_rounds: TOTAL_ROUNDS,
@@ -857,21 +920,19 @@ function saveRoundResult() {
     completed_game: currentRound === TOTAL_ROUNDS ? "1" : "0",
 
     round: currentRound,
-    targetHSV: { ...targetHSV },
+    targetHSV: {{ ...targetHSV }},
     guessHSV,
     targetHex,
     playerHex,
     elapsedSeconds,
     score
-  };
+  }};
 
   roundResults.push(row);
   return row;
-}
+}}
 
-let currentSessionStartTimestamp = "";
-
-function showResults() {
+function showResults() {{
   const roundData = saveRoundResult();
 
   document.getElementById("playActionArea").style.display = "none";
@@ -885,10 +946,10 @@ function showResults() {
     formatHSV(roundData.guessHSV.h, roundData.guessHSV.s, roundData.guessHSV.v);
 
   document.getElementById("timeSpentDisplay").textContent =
-    `Time spent adjusting: ${roundData.elapsedSeconds.toFixed(2)}s`;
+    `Time spent adjusting: ${{roundData.elapsedSeconds.toFixed(2)}}s`;
 
   document.getElementById("scoreValue").textContent =
-    `${roundData.score.finalScore.toFixed(2)}`;
+    `${{roundData.score.finalScore.toFixed(2)}}`;
 
   document.getElementById("playerColorSection").style.display = "none";
   document.getElementById("controlsSection").style.display = "none";
@@ -898,9 +959,9 @@ function showResults() {
   btn.textContent = currentRound < TOTAL_ROUNDS ? "Next round" : "See final results";
   btn.onclick = currentRound < TOTAL_ROUNDS ? startNextRound : showFinalSummary;
   document.getElementById("resultsActionArea").style.display = "flex";
-}
+}}
 
-function startNextRound() {
+function startNextRound() {{
   currentRound += 1;
   targetHSV = randomTargetHSV();
   setTargetBoxColor();
@@ -922,9 +983,9 @@ function startNextRound() {
   document.getElementById("controlsSection").style.display = "flex";
 
   startCountdown();
-}
+}}
 
-function showFinalSummary() {
+async function showFinalSummary() {{
   document.getElementById("results").style.display = "none";
   document.getElementById("resultsActionArea").style.display = "none";
   document.getElementById("playActionArea").style.display = "none";
@@ -940,29 +1001,31 @@ function showFinalSummary() {
   const meanTime = roundResults.length ? totalTime / roundResults.length : 0;
   const sessionEndTimestamp = nowIso();
 
-  const sessionRow = {
+  const completedGameValue = roundResults.length === TOTAL_ROUNDS ? "1" : "0";
+
+  const sessionRow = {{
     participant_id: playerName,
     session_id: sessionId,
     session_start_timestamp: currentSessionStartTimestamp,
     session_end_timestamp: sessionEndTimestamp,
     total_rounds: TOTAL_ROUNDS,
     completed_rounds: roundResults.length,
-    completed_game: roundResults.length === TOTAL_ROUNDS ? "1" : "0",
+    completed_game: completedGameValue,
     total_score: totalScore.toFixed(6),
     average_score: avgScore.toFixed(6),
     total_adjust_time_seconds: totalTime.toFixed(6),
     mean_adjust_time_seconds: meanTime.toFixed(6)
-  };
+  }};
 
   sessionResults = [sessionRow];
-  roundResults = roundResults.map(r => ({
+  roundResults = roundResults.map(r => ({{
     ...r,
-    completed_game: roundResults.length === TOTAL_ROUNDS ? "1" : "0"
-  }));
+    completed_game: completedGameValue
+  }}));
 
-  document.getElementById("playerNameFinal").textContent = `Player: ${playerName}`;
+  document.getElementById("playerNameFinal").textContent = `Player: ${{playerName}}`;
   document.getElementById("finalStats").textContent =
-    `Total: ${totalScore.toFixed(2)} • Average: ${avgScore.toFixed(2)} • Total adjust time: ${totalTime.toFixed(2)}s`;
+    `Total: ${{totalScore.toFixed(2)}} • Average: ${{avgScore.toFixed(2)}} • Total adjust time: ${{totalTime.toFixed(2)}}s`;
 
   const header = document.createElement("div");
   header.className = "summary-card";
@@ -977,19 +1040,19 @@ function showFinalSummary() {
   `;
   summaryRows.appendChild(header);
 
-  roundResults.forEach((r) => {
+  roundResults.forEach((r) => {{
     const row = document.createElement("div");
     row.className = "summary-card";
     row.innerHTML = `
       <div class="summary-grid">
-        <div class="summary-cell" style="font-weight:800;">${r.round}</div>
+        <div class="summary-cell" style="font-weight:800;">${{r.round}}</div>
 
         <div class="summary-cell">
           <div class="mini-swatch-wrap">
             <div class="mini-swatch-block">
-              <div class="mini-swatch" style="background:${r.targetHex};"></div>
+              <div class="mini-swatch" style="background:${{r.targetHex}};"></div>
               <div class="compact-color-line">
-                ${formatHSVSingleLine(r.targetHSV.h, r.targetHSV.s, r.targetHSV.v)}
+                ${{formatHSVSingleLine(r.targetHSV.h, r.targetHSV.s, r.targetHSV.v)}}
               </div>
             </div>
           </div>
@@ -998,26 +1061,30 @@ function showFinalSummary() {
         <div class="summary-cell">
           <div class="mini-swatch-wrap">
             <div class="mini-swatch-block">
-              <div class="mini-swatch" style="background:${r.playerHex};"></div>
+              <div class="mini-swatch" style="background:${{r.playerHex}};"></div>
               <div class="compact-color-line">
-                ${formatHSVSingleLine(r.guessHSV.h, r.guessHSV.s, r.guessHSV.v)}
+                ${{formatHSVSingleLine(r.guessHSV.h, r.guessHSV.s, r.guessHSV.v)}}
               </div>
             </div>
           </div>
         </div>
 
-        <div class="summary-cell" style="font-weight:700;">${parseFloat(r.score_final).toFixed(2)}</div>
-        <div class="summary-cell">${parseFloat(r.elapsed_seconds).toFixed(2)}s</div>
+        <div class="summary-cell" style="font-weight:700;">${{parseFloat(r.score_final).toFixed(2)}}</div>
+        <div class="summary-cell">${{parseFloat(r.elapsed_seconds).toFixed(2)}}s</div>
       </div>
     `;
     summaryRows.appendChild(row);
-  });
+  }});
 
-  prepareCsvDownloads();
+  prepareTsvDownloads();
   document.getElementById("finalSummary").style.display = "block";
-}
 
-function resetGame() {
+  if (!resultsSaved) {{
+    await saveResultsToGoogleSheets(sessionRow, roundResults);
+  }}
+}}
+
+function resetGame() {{
   if (countdownInterval) clearInterval(countdownInterval);
   if (revealTimeout) clearTimeout(revealTimeout);
 
@@ -1030,6 +1097,7 @@ function resetGame() {
   currentRoundInitialHSV = null;
   sessionId = generateSessionId();
   currentSessionStartTimestamp = "";
+  resultsSaved = false;
 
   document.getElementById("startScreen").style.display = "flex";
   document.getElementById("gameContainer").style.display = "none";
@@ -1042,20 +1110,21 @@ function resetGame() {
   document.getElementById("resultsActionArea").style.display = "none";
   document.getElementById("finalSummary").style.display = "none";
   document.getElementById("playActionArea").style.display = "none";
+  document.getElementById("saveStatus").textContent = "";
 
   updateRoundIndicators();
-}
+}}
 
-function beginGame() {
+function beginGame() {{
   const input = document.getElementById("playerNameInput");
   const validation = document.getElementById("startValidation");
   const trimmed = input.value.trim();
 
-  if (!trimmed) {
+  if (!trimmed) {{
     validation.textContent = "Please enter your name to start.";
     input.focus();
     return;
-  }
+  }}
 
   playerName = trimmed;
   validation.textContent = "";
@@ -1069,6 +1138,7 @@ function beginGame() {
   currentRoundInitialHSV = null;
   sessionId = generateSessionId();
   currentSessionStartTimestamp = nowIso();
+  resultsSaved = false;
   updateRoundIndicators();
 
   document.getElementById("startScreen").style.display = "none";
@@ -1082,59 +1152,64 @@ function beginGame() {
   document.getElementById("resultsActionArea").style.display = "none";
   document.getElementById("finalSummary").style.display = "none";
   document.getElementById("playActionArea").style.display = "none";
+  document.getElementById("saveStatus").textContent = "";
 
   startCountdown();
-}
+}}
 
-function setRandomColor() {
+function setRandomColor() {{
   const h = Math.random() * 360;
   const s = 50 + Math.random() * 50;
   const v = 50 + Math.random() * 50;
 
-  document.getElementById("h").value = Math.round(h);
-  document.getElementById("s").value = Math.round(s);
-  document.getElementById("v").value = Math.round(v);
+  const hRounded = Math.round(h);
+  const sRounded = Math.round(s);
+  const vRounded = Math.round(v);
 
-  currentRoundInitialHSV = {
-    h: Math.round(h) / 360,
-    s: Math.round(s) / 100,
-    v: Math.round(v) / 100
-  };
+  document.getElementById("h").value = hRounded;
+  document.getElementById("s").value = sRounded;
+  document.getElementById("v").value = vRounded;
+
+  currentRoundInitialHSV = {{
+    h: hRounded / 360,
+    s: sRounded / 100,
+    v: vRounded / 100
+  }};
 
   updateReadouts();
-}
+}}
 
-function updateColor() {
+function updateColor() {{
   const h = parseFloat(document.getElementById("h").value) / 360;
   const s = parseFloat(document.getElementById("s").value) / 100;
   const v = parseFloat(document.getElementById("v").value) / 100;
 
   const hex = hsvToHex(h, s, v);
   document.getElementById("preview").style.background = hex;
-}
+}}
 
-function updateSliderBackgrounds() {
+function updateSliderBackgrounds() {{
   const h = parseFloat(document.getElementById("h").value) / 360;
   const v = parseFloat(document.getElementById("v").value) / 100;
 
   const [r, g, b] = hsvToRgb(h, 1, v);
-  const fullColor = `rgb(${r}, ${g}, ${b})`;
+  const fullColor = `rgb(${{r}}, ${{g}}, ${{b}})`;
 
   const greyValue = Math.round(v * 255);
-  const grey = `rgb(${greyValue}, ${greyValue}, ${greyValue})`;
+  const grey = `rgb(${{greyValue}}, ${{greyValue}}, ${{greyValue}})`;
 
   document.getElementById("s").style.background =
-    `linear-gradient(to right, ${grey}, ${fullColor})`;
+    `linear-gradient(to right, ${{grey}}, ${{fullColor}})`;
 
   document.getElementById("v").style.background =
-    `linear-gradient(to right, black, ${fullColor})`;
-}
+    `linear-gradient(to right, black, ${{fullColor}})`;
+}}
 
-function handleSliderInput() {
+function handleSliderInput() {{
   updateReadouts();
   updateColor();
   updateSliderBackgrounds();
-}
+}}
 
 document.getElementById("h").addEventListener("input", handleSliderInput);
 document.getElementById("s").addEventListener("input", handleSliderInput);
@@ -1142,24 +1217,24 @@ document.getElementById("v").addEventListener("input", handleSliderInput);
 document.getElementById("restartBtn").addEventListener("click", resetGame);
 document.getElementById("startGameBtn").addEventListener("click", beginGame);
 document.getElementById("playActionBtn").addEventListener("click", showResults);
-document.getElementById("playerNameInput").addEventListener("keydown", (e) => {
+document.getElementById("playerNameInput").addEventListener("keydown", (e) => {{
   if (e.key === "Enter") beginGame();
-});
-document.getElementById("playerNameInput").addEventListener("input", () => {
+}});
+document.getElementById("playerNameInput").addEventListener("input", () => {{
   document.getElementById("startValidation").textContent = "";
-});
+}});
 
-function startCountdown() {
+function startCountdown() {{
   let count = 3;
   const el = document.getElementById("countdownPhase");
   el.textContent = "3";
   el.style.display = "block";
 
-  countdownInterval = setInterval(() => {
+  countdownInterval = setInterval(() => {{
     count--;
-    if (count > 0) {
+    if (count > 0) {{
       el.textContent = count;
-    } else {
+    }} else {{
       clearInterval(countdownInterval);
       countdownInterval = null;
 
@@ -1169,7 +1244,7 @@ function startCountdown() {
       targetPhase.style.display = "block";
       setTargetBoxColor();
 
-      revealTimeout = setTimeout(() => {
+      revealTimeout = setTimeout(() => {{
         revealTimeout = null;
 
         targetPhase.style.display = "none";
@@ -1186,10 +1261,10 @@ function startCountdown() {
         updateColor();
         updateSliderBackgrounds();
         adjustStartTime = performance.now();
-      }, 5000);
-    }
-  }, 1000);
-}
+      }}, 5000);
+    }}
+  }}, 1000);
+}}
 
 sessionId = generateSessionId();
 updateRoundIndicators();
@@ -1200,4 +1275,4 @@ setTargetBoxColor();
 left_spacer, main_col, right_spacer = st.columns([1.6, 6, 1.0])
 
 with main_col:
-    components.html(html, height=1750)
+    components.html(html, height=1820)
