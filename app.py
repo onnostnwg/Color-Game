@@ -7,6 +7,7 @@ st.markdown("""
 <style>
 .block-container {
     padding-top: 1rem;
+    padding-bottom: 0rem;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -15,6 +16,12 @@ APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmuZRNR9qR1sFFPe7TMe
 
 html = f"""
 <style>
+
+html,
+body {{
+  margin: 0;
+  padding: 0;
+}}
 
 .timer-overlay {{
   position: absolute;
@@ -487,7 +494,7 @@ input[type=range]::-moz-range-thumb {{
 
 </style>
 
-<div style="font-family:sans-serif; display:flex; flex-direction:column; align-items:center; gap:30px; color:white;">
+<div id="appRoot" style="font-family:sans-serif; display:flex; flex-direction:column; align-items:center; gap:24px; color:white;">
 
   <div id="startScreen" class="start-screen">
   <div class="start-title">Color Memory Game</div>
@@ -516,7 +523,7 @@ input[type=range]::-moz-range-thumb {{
       margin-top:120px;
     ">3</div>
 
-    <div id="targetPhase" style="display:none; text-align:center; margin-top:30px;">
+    <div id="targetPhase" style="display:none; text-align:center; margin-top:30px; width:100%;">
       <div style="position:relative; display:inline-block;">
         <div id="targetBox" style="width:300px; height:300px; border-radius:16px; border:2px solid #555;"></div>
         <div id="targetRoundIndicator" class="round-overlay">1/5</div>
@@ -801,6 +808,43 @@ let gameMode = "easy";
 let lastCompletedGameRow = null;
 let leaderboardDataCache = null;
 let leaderboardFetchPromise = null;
+
+let resizeFrameTimeout = null;
+
+function resizeStreamlitFrame() {{
+  if (resizeFrameTimeout) clearTimeout(resizeFrameTimeout);
+
+  resizeFrameTimeout = setTimeout(() => {{
+    const root = document.getElementById("appRoot");
+    const rootHeight = root ? root.getBoundingClientRect().height : document.body.scrollHeight;
+    const height = Math.ceil(rootHeight + 80);
+
+    if (window.frameElement) {{
+      window.frameElement.style.height = `${{height}}px`;
+    }}
+
+    window.parent.postMessage({{
+      isStreamlitMessage: true,
+      type: "streamlit:setFrameHeight",
+      height
+    }}, "*");
+  }}, 40);
+}}
+
+window.addEventListener("load", resizeStreamlitFrame);
+window.addEventListener("resize", resizeStreamlitFrame);
+
+if ("ResizeObserver" in window) {{
+  const frameResizeObserver = new ResizeObserver(resizeStreamlitFrame);
+  frameResizeObserver.observe(document.body);
+}}
+
+const frameMutationObserver = new MutationObserver(resizeStreamlitFrame);
+frameMutationObserver.observe(document.body, {{
+  attributes: true,
+  childList: true,
+  subtree: true
+}});
 
 const GAME_MODES = {{
   easy: {{
@@ -1237,6 +1281,7 @@ function showResults() {{
   btn.textContent = currentRound < TOTAL_ROUNDS ? "Next round" : "See final results";
   btn.onclick = currentRound < TOTAL_ROUNDS ? startNextRound : showFinalSummary;
   document.getElementById("resultsActionArea").style.display = "flex";
+  resizeStreamlitFrame();
 }}
 
 function startNextRound() {{
@@ -1263,6 +1308,7 @@ function startNextRound() {{
   document.getElementById("leaderboardScreen").style.display = "none";
 
   startCountdown();
+  resizeStreamlitFrame();
 }}
 
 async function showFinalSummary() {{
@@ -1346,6 +1392,7 @@ async function showFinalSummary() {{
   loadLeaderboardData(true).catch((err) => {{
     console.error("Leaderboard prefetch failed:", err);
   }});
+  resizeStreamlitFrame();
 }}
 
 function resetGame() {{
@@ -1384,6 +1431,7 @@ function resetGame() {{
   document.getElementById("leaderboardScreen").style.display = "none";
 
   updateRoundIndicators();
+  resizeStreamlitFrame();
 }}
 
 function beginGame() {{
@@ -1431,6 +1479,7 @@ function beginGame() {{
   document.getElementById("leaderboardScreen").style.display = "none";
 
   startCountdown();
+  resizeStreamlitFrame();
 }}
 
 function setRandomColor() {{
@@ -1552,6 +1601,7 @@ function startTargetTimer(durationMs) {{
 
   targetRevealEndTime = performance.now() + durationMs;
   timerEl.style.display = "block";
+  resizeStreamlitFrame();
 
   function renderTimer() {{
     const remainingMs = Math.max(0, targetRevealEndTime - performance.now());
@@ -1585,6 +1635,8 @@ function startCountdown() {{
       const targetPhase = document.getElementById("targetPhase");
       targetPhase.style.display = "block";
       setTargetBoxColor();
+      resizeStreamlitFrame();
+      setTimeout(resizeStreamlitFrame, 120);
 
       const revealMs = GAME_MODES[gameMode].revealMs;
 
@@ -1596,6 +1648,7 @@ function startCountdown() {{
 
         // hide target
         targetPhase.style.display = "none";
+        resizeStreamlitFrame();
 
         // delay before sliders
         setTimeout(() => {{
@@ -1612,6 +1665,7 @@ function startCountdown() {{
           updateColor();
           updateSliderBackgrounds();
           adjustStartTime = performance.now();
+          resizeStreamlitFrame();
         }}, 500);
 
       }}, revealMs);
@@ -1622,6 +1676,7 @@ function startCountdown() {{
 sessionId = generateSessionId();
 updateRoundIndicators();
 setTargetBoxColor();
+resizeStreamlitFrame();
 
 async function fetchLeaderboard() {{
   const params = new URLSearchParams();
@@ -1816,16 +1871,19 @@ async function showLeaderboard() {{
     const data = await loadLeaderboardData();
     renderLeaderboard(data);
     updateLeaderboardRank(data);
+    resizeStreamlitFrame();
   }} catch (err) {{
     console.error(err);
     rankDisplay.textContent = lastCompletedGameRow ? "Rank unavailable right now." : "";
     table.innerHTML = `<div class="leaderboard-empty">Could not load leaderboard.</div>`;
+    resizeStreamlitFrame();
   }}
 }}
 
 function backToFinalResults() {{
   document.getElementById("leaderboardScreen").style.display = "none";
   document.getElementById("finalSummary").style.display = "block";
+  resizeStreamlitFrame();
 }}
 
 </script>
@@ -1834,4 +1892,4 @@ function backToFinalResults() {{
 left_spacer, main_col, right_spacer = st.columns([1.6, 6, 1.0])
 
 with main_col:
-    components.html(html, height=1350)
+    components.html(html, height=980, scrolling=False)
