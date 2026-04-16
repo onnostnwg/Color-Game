@@ -21,6 +21,17 @@ html,
 body {{
   margin: 0;
   padding: 0;
+  overflow: hidden;
+}}
+
+#appViewport {{
+  height: 100vh;
+  min-height: 620px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: auto;
+  box-sizing: border-box;
+  padding-bottom: 24px;
 }}
 
 .timer-overlay {{
@@ -508,6 +519,7 @@ input[type=range]::-moz-range-thumb {{
 
 </style>
 
+<div id="appViewport">
 <div id="appRoot" style="font-family:sans-serif; display:flex; flex-direction:column; align-items:center; gap:24px; color:white;">
 
   <div id="startScreen" class="start-screen">
@@ -798,6 +810,7 @@ input[type=range]::-moz-range-thumb {{
     </div>
   </div>
 </div>
+</div>
 
 <script>
 const TOTAL_ROUNDS = 5;
@@ -846,6 +859,11 @@ function resizeStreamlitFrame() {{
 }}
 
 function scrollGameToTop() {{
+  const viewport = document.getElementById("appViewport");
+  if (viewport) {{
+    viewport.scrollTop = 0;
+  }}
+
   window.scrollTo({{ top: 0, left: 0, behavior: "auto" }});
 
   try {{
@@ -1927,4 +1945,4 @@ function backToFinalResults() {{
 left_spacer, main_col, right_spacer = st.columns([1.6, 6, 1.0])
 
 with main_col:
-    components.html(html, height=840, scrolling=False)
+    components.html(html, height=720, scrolling=False)
