@@ -23,6 +23,10 @@ body {{
   padding: 0;
 }}
 
+:root {{
+  --color-box-size: min(300px, 82vw);
+}}
+
 .timer-overlay {{
   position: absolute;
   top: 12px;
@@ -364,12 +368,12 @@ input[type=range]::-moz-range-thumb {{
 
 #targetBox,
 #preview {{
-  width: min(300px, 82vw) !important;
-  height: min(300px, 82vw) !important;
+  width: var(--color-box-size) !important;
+  height: var(--color-box-size) !important;
 }}
 
 #playerColorSection {{
-  width: min(300px, 82vw) !important;
+  width: var(--color-box-size) !important;
 }}
 
 #controlsSection {{
@@ -440,94 +444,96 @@ input[type=range]::-moz-range-thumb {{
 }}
 
 @media (max-width: 520px) {{
+  :root {{
+    --color-box-size: min(300px, 78vw, 34vh);
+  }}
+
   #appRoot {{
-    gap: 14px !important;
+    gap: 10px !important;
   }}
 
   #gameContainer {{
-    gap: 16px !important;
+    gap: 10px !important;
   }}
 
   .start-screen {{
-    margin-top: 36px;
-    gap: 12px;
+    margin-top: 28px;
+    gap: 10px;
   }}
 
   .start-title {{
-    font-size: 28px;
+    font-size: 26px;
+  }}
+
+  .start-subtitle {{
+    font-size: 14px;
   }}
 
   .primary-btn {{
-    padding: 11px 14px;
-    font-size: 15px;
+    padding: 10px 13px;
+    font-size: 14px;
   }}
 
   #countdownPhase {{
-    font-size: 72px !important;
-    margin-top: 40px !important;
+    font-size: 60px !important;
+    margin-top: 28px !important;
   }}
 
   #targetPhase,
   #playPhase {{
-    margin-top: 8px !important;
+    margin-top: 4px !important;
+  }}
+
+  #playPhase {{
+    gap: 12px !important;
   }}
 
   .round-overlay,
   .timer-overlay {{
-    top: 8px;
-    padding: 6px 8px;
-    font-size: 15px;
-  }}
-
-  #targetBox,
-  #preview {{
-    width: min(220px, 70vw) !important;
-    height: min(220px, 70vw) !important;
-  }}
-
-  #playerColorSection {{
-    width: min(220px, 70vw) !important;
+    top: 6px;
+    padding: 5px 7px;
+    font-size: 13px;
   }}
 
   #controlsSection {{
     width: min(360px, 88vw) !important;
-    gap: 10px !important;
+    gap: 8px !important;
   }}
 
   .label-row {{
-    margin-bottom: 4px;
-    font-size: 13px;
+    margin-bottom: 3px;
+    font-size: 12px;
   }}
 
   input[type=range] {{
-    height: 14px;
+    height: 12px;
   }}
 
   input[type=range]::-webkit-slider-runnable-track {{
-    height: 14px;
+    height: 12px;
   }}
 
   input[type=range]::-webkit-slider-thumb {{
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     margin-top: -5px;
   }}
 
   input[type=range]::-moz-range-track {{
-    height: 14px;
+    height: 12px;
   }}
 
   input[type=range]::-moz-range-thumb {{
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
   }}
 
   .round-overlay {{
-    left: 8px;
+    left: 6px;
   }}
 
   .timer-overlay {{
-    right: 8px;
+    right: 6px;
   }}
 
   #summaryRows {{
@@ -1976,4 +1982,4 @@ function backToFinalResults() {{
 left_spacer, main_col, right_spacer = st.columns([1.6, 6, 1.0])
 
 with main_col:
-    components.html(html, height=760, scrolling=False)
+    components.html(html, height=660, scrolling=False)
