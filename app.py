@@ -507,8 +507,8 @@ function nowIso() {{
 function randomTargetHSV() {{
   return {{
     h: Math.random(),
-    s: 0.5 + Math.random() * 0.5,
-    v: 0.5 + Math.random() * 0.5
+    s: 0.15 + Math.random() * 0.85,
+    v: 0.15 + Math.random() * 0.85
   }};
 }}
 
@@ -1159,8 +1159,8 @@ function beginGame() {{
 
 function setRandomColor() {{
   const h = Math.random() * 360;
-  const s = 50 + Math.random() * 50;
-  const v = 50 + Math.random() * 50;
+  const s = 15 + Math.random() * 85;
+  const v = 15 + Math.random() * 85;
 
   const hRounded = Math.round(h);
   const sRounded = Math.round(s);
