@@ -845,6 +845,27 @@ function resizeStreamlitFrame() {{
   }}, 40);
 }}
 
+function scrollGameToTop() {{
+  window.scrollTo({{ top: 0, left: 0, behavior: "auto" }});
+
+  try {{
+    window.parent.scrollTo({{ top: 0, left: 0, behavior: "auto" }});
+  }} catch (err) {{
+    window.parent.postMessage({{
+      isStreamlitMessage: true,
+      type: "streamlit:scrollTo",
+      top: 0
+    }}, "*");
+  }}
+}}
+
+function resetViewportForPhase() {{
+  scrollGameToTop();
+  resizeStreamlitFrame();
+  setTimeout(scrollGameToTop, 60);
+  setTimeout(resizeStreamlitFrame, 80);
+}}
+
 window.addEventListener("load", resizeStreamlitFrame);
 window.addEventListener("resize", resizeStreamlitFrame);
 
@@ -1295,7 +1316,7 @@ function showResults() {{
   btn.textContent = currentRound < TOTAL_ROUNDS ? "Next round" : "See final results";
   btn.onclick = currentRound < TOTAL_ROUNDS ? startNextRound : showFinalSummary;
   document.getElementById("resultsActionArea").style.display = "flex";
-  resizeStreamlitFrame();
+  resetViewportForPhase();
 }}
 
 function startNextRound() {{
@@ -1322,7 +1343,7 @@ function startNextRound() {{
   document.getElementById("leaderboardScreen").style.display = "none";
 
   startCountdown();
-  resizeStreamlitFrame();
+  resetViewportForPhase();
 }}
 
 async function showFinalSummary() {{
@@ -1406,7 +1427,7 @@ async function showFinalSummary() {{
   loadLeaderboardData(true).catch((err) => {{
     console.error("Leaderboard prefetch failed:", err);
   }});
-  resizeStreamlitFrame();
+  resetViewportForPhase();
 }}
 
 function resetGame() {{
@@ -1445,7 +1466,7 @@ function resetGame() {{
   document.getElementById("leaderboardScreen").style.display = "none";
 
   updateRoundIndicators();
-  resizeStreamlitFrame();
+  resetViewportForPhase();
 }}
 
 function beginGame() {{
@@ -1493,7 +1514,7 @@ function beginGame() {{
   document.getElementById("leaderboardScreen").style.display = "none";
 
   startCountdown();
-  resizeStreamlitFrame();
+  resetViewportForPhase();
 }}
 
 function setRandomColor() {{
@@ -1649,7 +1670,7 @@ function startCountdown() {{
       const targetPhase = document.getElementById("targetPhase");
       targetPhase.style.display = "block";
       setTargetBoxColor();
-      resizeStreamlitFrame();
+      resetViewportForPhase();
       setTimeout(resizeStreamlitFrame, 120);
 
       const revealMs = GAME_MODES[gameMode].revealMs;
@@ -1662,7 +1683,7 @@ function startCountdown() {{
 
         // hide target
         targetPhase.style.display = "none";
-        resizeStreamlitFrame();
+        resetViewportForPhase();
 
         // delay before sliders
         setTimeout(() => {{
@@ -1679,7 +1700,7 @@ function startCountdown() {{
           updateColor();
           updateSliderBackgrounds();
           adjustStartTime = performance.now();
-          resizeStreamlitFrame();
+          resetViewportForPhase();
         }}, 500);
 
       }}, revealMs);
@@ -1690,7 +1711,7 @@ function startCountdown() {{
 sessionId = generateSessionId();
 updateRoundIndicators();
 setTargetBoxColor();
-resizeStreamlitFrame();
+resetViewportForPhase();
 
 async function fetchLeaderboard() {{
   const params = new URLSearchParams();
@@ -1885,19 +1906,19 @@ async function showLeaderboard() {{
     const data = await loadLeaderboardData();
     renderLeaderboard(data);
     updateLeaderboardRank(data);
-    resizeStreamlitFrame();
+    resetViewportForPhase();
   }} catch (err) {{
     console.error(err);
     rankDisplay.textContent = lastCompletedGameRow ? "Rank unavailable right now." : "";
     table.innerHTML = `<div class="leaderboard-empty">Could not load leaderboard.</div>`;
-    resizeStreamlitFrame();
+    resetViewportForPhase();
   }}
 }}
 
 function backToFinalResults() {{
   document.getElementById("leaderboardScreen").style.display = "none";
   document.getElementById("finalSummary").style.display = "block";
-  resizeStreamlitFrame();
+  resetViewportForPhase();
 }}
 
 </script>
