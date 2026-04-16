@@ -15,6 +15,44 @@ APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmuZRNR9qR1sFFPe7TMe
 
 html = f"""
 <style>
+
+.timer-overlay {{
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 20;
+  background: rgba(20,20,20,0.58);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 10px;
+  padding: 8px 10px;
+  color: white;
+  font-family: monospace;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.28);
+  display: none;
+  pointer-events: none;
+}}
+
+.round-overlay {{
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 20;
+  background: rgba(20,20,20,0.58);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 10px;
+  padding: 8px 10px;
+  color: white;
+  font-family: monospace;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.28);
+  pointer-events: none;
+}}
+
 input[type=range] {{
   -webkit-appearance: none;
   height: 18px;
@@ -83,47 +121,109 @@ input[type=range]::-moz-range-thumb {{
   width: 100%;
   background: #242424;
   border: 1px solid #444;
-  border-radius: 14px;
+  border-radius: 18px;
   padding: 16px;
   box-sizing: border-box;
+  min-width: 0;
 }}
 
-.summary-grid {{
-  display: grid;
-  grid-template-columns: 74px 1.35fr 1.35fr 90px 90px;
-  gap: 12px;
-  align-items: center;
-}}
-
-.summary-head {{
-  font-weight: 700;
-  opacity: 0.95;
-  font-size: 14px;
-}}
-
-.summary-cell {{
-  font-size: 14px;
-  opacity: 0.95;
-}}
-
-.mini-swatch-wrap {{
-  display: flex;
-  gap: 14px;
-  align-items: center;
-}}
-
-.mini-swatch-block {{
+.round-card-top {{
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
   gap: 6px;
+  margin-bottom: 12px;
 }}
 
-.mini-swatch {{
-  width: 42px;
-  height: 42px;
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.2);
+.round-card-title {{
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.2;
+  width: 100%;
+  text-align: center;
+}}
+
+.round-card-score {{
+  font-size: 16px;
+  font-weight: 800;
+  white-space: nowrap;
+  width: 100%;
+  text-align: center;
+}}
+
+.round-card-subtitle {{
+  font-size: 12px;
+  opacity: 0.82;
+  line-height: 1.25;
+  text-align: center;
+}}
+
+.combined-color-panel {{
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.03);
+  margin-top: 10px;
+}}
+
+.combined-color-half {{
+  height: 88px;
+  width: 100%;
+  position: relative;
+}}
+
+.combined-color-half-label {{
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: white;
+  background: rgba(0,0,0,0.34);
+  padding: 4px 8px;
+  border-radius: 8px;
+}}
+
+.final-meta-row {{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+  margin-top: 14px;
+  margin-bottom: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  opacity: 0.95;
+  flex-wrap: wrap;
+}}
+
+.final-stats-line {{
+  margin-top: 8px;
+}}
+
+.current-rank-display {{
+  margin-top: 8px;
+  margin-bottom: 18px;
+  font-size: 16px;
+  font-weight: 800;
+  text-align: center;
+  opacity: 0.95;
+}}
+
+.summary-header-card {{
+  grid-column: 1 / -1;
+  width: 100%;
+  background: #242424;
+  border: 1px solid #444;
+  border-radius: 18px;
+  padding: 14px 18px;
+  box-sizing: border-box;
+  font-size: 14px;
+  font-weight: 700;
+  opacity: 0.92;
 }}
 
 .phase-title {{
@@ -137,14 +237,6 @@ input[type=range]::-moz-range-thumb {{
   font-size: 16px;
   opacity: 0.85;
   text-align: center;
-}}
-
-.compact-color-line {{
-  font-size: 12px;
-  opacity: 0.9;
-  text-align: center;
-  line-height: 1.35;
-  white-space: nowrap;
 }}
 
 .start-screen {{
@@ -212,45 +304,210 @@ input[type=range]::-moz-range-thumb {{
   margin-bottom: 4px;
 }}
 
-.download-btn {{
-  padding: 12px 18px;
-  font-size: 15px;
-  font-weight: 600;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  background: white;
-  color: black;
-  text-decoration: none;
-  display: inline-block;
-}}
-
-.download-row {{
-  display: flex;
-  justify-content: center;
+.leaderboard-row {{
+  display: grid;
+  grid-template-columns: 92px 1fr 140px;
+  align-items: center;
   gap: 14px;
-  margin-top: 22px;
-  flex-wrap: wrap;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #242424;
+  border: 1px solid #444;
 }}
 
-.save-status {{
-  margin-top: 14px;
-  font-size: 14px;
-  opacity: 0.9;
+.leaderboard-rank {{
+  font-size: 22px;
+  font-weight: 800;
   text-align: center;
-  min-height: 20px;
 }}
+
+.leaderboard-name {{
+  font-size: 16px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}}
+
+.leaderboard-score {{
+  font-size: 18px;
+  font-weight: 800;
+  text-align: right;
+}}
+
+.leaderboard-section {{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}}
+
+.leaderboard-mode-title {{
+  font-size: 18px;
+  font-weight: 800;
+  margin-top: 8px;
+}}
+
+.leaderboard-empty {{
+  text-align: center;
+  opacity: 0.8;
+  padding: 24px 12px;
+  border: 1px dashed #555;
+  border-radius: 14px;
+}}
+
+#targetBox,
+#preview {{
+  width: min(300px, 82vw) !important;
+  height: min(300px, 82vw) !important;
+}}
+
+#playerColorSection {{
+  width: min(300px, 82vw) !important;
+}}
+
+#controlsSection {{
+  width: min(400px, 88vw) !important;
+}}
+
+#results {{
+  width: min(500px, 92vw) !important;
+}}
+
+#finalSummary {{
+  width: min(980px, 94vw) !important;
+}}
+
+#leaderboardScreen {{
+  width: min(760px, 94vw) !important;
+}}
+
+#resultsDetails > div {{
+  width: min(456px, 86vw) !important;
+}}
+
+@media (max-width: 700px) {{
+  .start-screen {{
+    margin-top: 56px;
+    gap: 16px;
+  }}
+
+  .start-title {{
+    font-size: 32px;
+  }}
+
+  #countdownPhase {{
+    font-size: 96px !important;
+    margin-top: 80px !important;
+  }}
+
+  #playPhase {{
+    gap: 22px !important;
+    margin-top: 20px !important;
+  }}
+
+  #targetPhase {{
+    margin-top: 20px !important;
+  }}
+
+  #scoreDisplay {{
+    font-size: 52px !important;
+  }}
+
+  #colorComparison {{
+    gap: 16px !important;
+  }}
+
+  #resultsDetails > div {{
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 16px !important;
+  }}
+
+  #summaryRows {{
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }}
+
+  .combined-color-half {{
+    height: 72px;
+  }}
+}}
+
+@media (max-width: 520px) {{
+  .primary-btn {{
+    padding: 11px 14px;
+    font-size: 15px;
+  }}
+
+  .round-overlay,
+  .timer-overlay {{
+    top: 8px;
+    padding: 6px 8px;
+    font-size: 15px;
+  }}
+
+  .round-overlay {{
+    left: 8px;
+  }}
+
+  .timer-overlay {{
+    right: 8px;
+  }}
+
+  #summaryRows {{
+    grid-template-columns: 1fr !important;
+  }}
+
+  .summary-card {{
+    padding: 14px;
+  }}
+
+  .leaderboard-row {{
+    grid-template-columns: 54px minmax(0, 1fr) 76px;
+    gap: 8px;
+    padding: 12px 10px;
+  }}
+
+  .leaderboard-rank {{
+    font-size: 18px;
+  }}
+
+  .leaderboard-name {{
+    font-size: 14px;
+  }}
+
+  .leaderboard-score {{
+    font-size: 15px;
+  }}
+
+  .final-meta-row {{
+    gap: 10px;
+    flex-direction: column;
+  }}
+}}
+
 </style>
 
 <div style="font-family:sans-serif; display:flex; flex-direction:column; align-items:center; gap:30px; color:white;">
 
   <div id="startScreen" class="start-screen">
-    <div class="start-title">Color Memory Game</div>
-    <div class="start-subtitle">Enter your name to begin</div>
-    <input id="playerNameInput" class="name-input" type="text" maxlength="40" placeholder="Your name" />
-    <button id="startGameBtn" class="primary-btn">Start Game</button>
-    <div id="startValidation" class="validation-text"></div>
+  <div class="start-title">Color Memory Game</div>
+  <div class="start-subtitle">Enter your name to begin</div>
+
+  <input id="playerNameInput" class="name-input" type="text" maxlength="40" placeholder="Your name" />
+
+<div style="margin-top:10px; text-align:center;">
+  <div style="font-size:14px; margin-bottom:6px; opacity:0.9;">
+    Choose game mode
   </div>
+  <div style="display:flex; gap:10px; justify-content:center;">
+    <button type="button" id="modeEasy" class="primary-btn" style="background:#ffffff; color:black;">Easy</button>
+    <button type="button" id="modeHard" class="primary-btn" style="background:#333; color:white;">Hard</button>
+  </div>
+</div>
+
+  <button id="startGameBtn" class="primary-btn">Start Game</button>
+  <div id="startValidation" class="validation-text"></div>
+</div>
 
   <div id="gameContainer" style="display:none; width:100%; flex-direction:column; align-items:center; gap:30px;">
     <div id="countdownPhase" style="
@@ -260,15 +517,17 @@ input[type=range]::-moz-range-thumb {{
     ">3</div>
 
     <div id="targetPhase" style="display:none; text-align:center; margin-top:30px;">
-      <div style="margin-bottom:10px; font-weight:600;">Target</div>
-      <div id="targetBox" style="width:300px; height:300px; border-radius:16px; border:2px solid #555;"></div>
+      <div style="position:relative; display:inline-block;">
+        <div id="targetBox" style="width:300px; height:300px; border-radius:16px; border:2px solid #555;"></div>
+        <div id="targetRoundIndicator" class="round-overlay">1/5</div>
+        <div id="targetTimer" class="timer-overlay">5.000</div>
+      </div>
     </div>
 
     <div id="playPhase" style="display:none; flex-direction:column; align-items:center; gap:30px; margin-top:30px;">
 
       <div id="playerColorSection" style="position:relative; display:flex; justify-content:center; width:300px;">
         <div style="text-align:center;">
-          <div style="margin-bottom:10px; font-weight:600;">Your color</div>
           <div id="preview" style="
             width:300px;
             height:300px;
@@ -276,6 +535,7 @@ input[type=range]::-moz-range-thumb {{
             border-radius:16px;
             border:2px solid #555;">
           </div>
+          <div id="playRoundIndicator" class="round-overlay">1/5</div>
         </div>
       </div>
 
@@ -346,15 +606,24 @@ input[type=range]::-moz-range-thumb {{
           </div>
 
           <div id="scoreDisplay" style="
-            font-size:72px;
-            font-weight:800;
-            text-align:center;
-            line-height:1;
-            margin-bottom:26px;
-            letter-spacing:-1px;
-          ">
-            Score: <span id="scoreValue">0.00</span>
-          </div>
+  font-size:72px;
+  font-weight:800;
+  text-align:center;
+  line-height:1;
+  margin-bottom:10px;
+  letter-spacing:-1px;
+">
+  Score: <span id="scoreValue">0.00</span>
+</div>
+
+<div id="roundCommentDisplay" style="
+  font-size:20px;
+  font-weight:700;
+  text-align:center;
+  margin-bottom:22px;
+  opacity:0.95;
+">
+</div>
 
           <div id="colorComparison" style="
             display:flex;
@@ -440,40 +709,70 @@ input[type=range]::-moz-range-thumb {{
       </div>
 
       <div id="finalSummary" style="
-        display:none;
-        width:980px;
-        margin-top:20px;
-        padding:24px 20px 20px 20px;
-        border-radius:16px;
-        background:#1e1e1e;
-        border:1px solid #444;
-        color:white;
-        box-sizing:border-box;
-      ">
-        <div class="phase-title">Final Results</div>
-        <div id="playerNameFinal" class="player-name-banner"></div>
-        <div class="phase-subtitle" id="finalStats">Total: 0.00 • Average: 0.00</div>
+  display:none;
+  width:980px;
+  margin-top:20px;
+  padding:24px 20px 20px 20px;
+  border-radius:16px;
+  background:#1e1e1e;
+  border:1px solid #444;
+  color:white;
+  box-sizing:border-box;
+">
+  <div class="phase-title">Final Results</div>
+  <div class="final-meta-row">
+    <div id="playerNameFinal"></div>
+    <div id="gameModeFinal"></div>
+  </div>
+  <div class="phase-subtitle final-stats-line" id="finalStats">Total: 0.00 • Average: 0.00</div>
 
-        <div id="summaryRows" style="
-          display:flex;
-          flex-direction:column;
-          gap:14px;
-          margin-top:24px;
-        "></div>
+  <div id="summaryRows" style="
+    display:grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap:14px;
+    margin-top:24px;
+    width:100%;
+  "></div>
 
-        <div class="download-row">
-          <a id="downloadRoundsBtn" class="download-btn" download="round_level_results.tsv">Download rounds file</a>
-          <a id="downloadSessionBtn" class="download-btn" download="game_level_results.tsv">Download game file</a>
-        </div>
+  <div style="display:flex; justify-content:center; margin-top:24px; gap:14px; flex-wrap:wrap;">
+    <button id="restartBtn" class="primary-btn">
+      Play Again
+    </button>
+    <button id="openLeaderboardBtn" class="primary-btn">
+      See Leaderboard
+    </button>
+  </div>
+</div>
 
-        <div id="saveStatus" class="save-status"></div>
+<div id="leaderboardScreen" style="
+  display:none;
+  width:760px;
+  margin-top:20px;
+  padding:24px 20px 20px 20px;
+  border-radius:16px;
+  background:#1e1e1e;
+  border:1px solid #444;
+  color:white;
+  box-sizing:border-box;
+">
+  <div class="phase-title">Leaderboard</div>
+  <div class="phase-subtitle" style="margin-bottom:22px;">
+    Top 5 scores by game mode
+  </div>
+  <div id="leaderboardRankDisplay" class="current-rank-display"></div>
 
-        <div style="display:flex; justify-content:center; margin-top:24px;">
-          <button id="restartBtn" class="primary-btn">
-            Play again
-          </button>
-        </div>
-      </div>
+  <div id="leaderboardTable" style="
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    width:100%;
+  "></div>
+
+  <div style="display:flex; justify-content:center; gap:14px; margin-top:24px; flex-wrap:wrap;">
+    <button id="backToFinalBtn" class="primary-btn">Back to final results</button>
+    <button id="restartFromLeaderboardBtn" class="primary-btn">Play again</button>
+  </div>
+</div>
 
     </div>
   </div>
@@ -496,6 +795,23 @@ let currentRoundInitialHSV = null;
 let currentSessionStartTimestamp = "";
 let resultsSaved = false;
 let savedRoundIds = new Set();
+let targetTimerInterval = null;
+let targetRevealEndTime = null;
+let gameMode = "easy";
+let lastCompletedGameRow = null;
+let leaderboardDataCache = null;
+let leaderboardFetchPromise = null;
+
+const GAME_MODES = {{
+  easy: {{
+    revealMs: 5000,
+    minHueDistance: 40
+  }},
+  hard: {{
+    revealMs: 2500,
+    minHueDistance: 90
+  }}
+}};
 
 function generateSessionId() {{
   return "S_" + Date.now() + "_" + Math.random().toString(36).slice(2, 10);
@@ -732,13 +1048,24 @@ function formatHSVSingleLine(h, s, v) {{
   return `H ${{(h * 360).toFixed(0)}}° • S ${{(s * 100).toFixed(0)}}% • B ${{(v * 100).toFixed(0)}}%`;
 }}
 
+function roundComment(score) {{
+  if (score >= 9) return "Dayum, u good!";
+  if (score >= 7) return "Ok ok, not bad.";
+  if (score >= 5) return "Oh well.";
+  if (score >= 3) return "See a doctor.";
+  return "U suck :(";
+}}
+
 function setTargetBoxColor() {{
   const hex = hsvToHex(targetHSV.h, targetHSV.s, targetHSV.v);
   document.getElementById("targetBox").style.background = hex;
 }}
 
 function updateRoundIndicators() {{
+  const roundText = `${{currentRound}}/${{TOTAL_ROUNDS}}`;
   document.getElementById("roundResultHeading").textContent = `Round ${{currentRound}} Results`;
+  document.getElementById("targetRoundIndicator").textContent = roundText;
+  document.getElementById("playRoundIndicator").textContent = roundText;
 }}
 
 function updateReadouts() {{
@@ -751,92 +1078,11 @@ function updateReadouts() {{
   document.getElementById("vValue").textContent = `${{Math.round(v)}}%`;
 }}
 
-function tsvEscape(value) {{
-  return String(value ?? "").replace(/\\t/g, " ").replace(/\\r?\\n/g, " ");
-}}
-
-function buildTsv(rows, columns) {{
-  const lines = [];
-  lines.push(columns.join("\\t"));
-  for (const row of rows) {{
-    lines.push(columns.map(col => tsvEscape(row[col])).join("\\t"));
-  }}
-  return lines.join("\\r\\n");
-}}
-
-function setDownloadLink(elementId, text, filename) {{
-  const utf8Bom = "\\uFEFF";
-  const blob = new Blob([utf8Bom, text], {{
-    type: "text/tab-separated-values;charset=utf-8;"
-  }});
-  const url = URL.createObjectURL(blob);
-  const link = document.getElementById(elementId);
-  link.href = url;
-  link.download = filename;
-}}
-
-function prepareTsvDownloads() {{
-  const roundColumns = [
-    "participant_id",
-    "session_id",
-    "round_id",
-    "session_start_timestamp",
-    "round_timestamp",
-    "round_number",
-    "total_rounds",
-    "target_h",
-    "target_s",
-    "target_v",
-    "target_hex",
-    "initial_h",
-    "initial_s",
-    "initial_v",
-    "guess_h",
-    "guess_s",
-    "guess_v",
-    "guess_hex",
-    "delta_e_ciede2000",
-    "hue_diff_deg",
-    "score_base",
-    "score_recovery",
-    "score_penalty",
-    "score_final",
-    "elapsed_seconds",
-    "completed_game"
-  ];
-
-  const sessionColumns = [
-    "participant_id",
-    "session_id",
-    "session_start_timestamp",
-    "session_end_timestamp",
-    "total_rounds",
-    "completed_rounds",
-    "completed_game",
-    "total_score",
-    "average_score",
-    "total_adjust_time_seconds",
-    "mean_adjust_time_seconds"
-  ];
-
-  const roundTsv = buildTsv(roundResults, roundColumns);
-  const sessionTsv = buildTsv(sessionResults, sessionColumns);
-
-  setDownloadLink(
-    "downloadRoundsBtn",
-    roundTsv,
-    `${{sessionId}}_round_level_results.tsv`
-  );
-
-  setDownloadLink(
-    "downloadSessionBtn",
-    sessionTsv,
-    `${{sessionId}}_game_level_results.tsv`
-  );
-}}
-
 function setSaveStatus(text) {{
-  document.getElementById("saveStatus").textContent = text;
+  const el = document.getElementById("saveStatus");
+  if (el) {{
+    el.textContent = text;
+  }}
 }}
 
 async function postJsonPayload(payload) {{
@@ -894,7 +1140,7 @@ async function saveSessionToGoogleSheets(gameRow) {{
     setSaveStatus("Final game summary saved.");
   }} catch (err) {{
     console.error(err);
-    setSaveStatus("Could not save final summary. Files are still available for download.");
+    setSaveStatus("Could not save final summary. Please try again later.");
   }}
 }}
 
@@ -915,12 +1161,13 @@ function saveRoundResult() {{
   const playerHex = hsvToHex(h, s, v);
   const roundId = `${{sessionId}}_R${{currentRound}}`;
 
-  const row = {{
+    const row = {{
     participant_id: playerName,
     session_id: sessionId,
     round_id: roundId,
     session_start_timestamp: currentSessionStartTimestamp,
     round_timestamp: nowIso(),
+    game_mode: gameMode,
     round_number: currentRound,
     total_rounds: TOTAL_ROUNDS,
     target_h: targetHSV.h.toFixed(6),
@@ -956,9 +1203,12 @@ function saveRoundResult() {{
   return row;
 }}
 
-async function showResults() {{
+function showResults() {{
   const roundData = saveRoundResult();
-  await saveRoundToGoogleSheets(roundData);
+
+  saveRoundToGoogleSheets(roundData).catch((err) => {{
+    console.error("Round save failed:", err);
+  }});
 
   document.getElementById("playActionArea").style.display = "none";
   document.getElementById("targetColorBox").style.background = roundData.targetHex;
@@ -976,6 +1226,9 @@ async function showResults() {{
   document.getElementById("scoreValue").textContent =
     `${{roundData.score.finalScore.toFixed(2)}}`;
 
+    document.getElementById("roundCommentDisplay").textContent =
+    roundComment(roundData.score.finalScore);
+
   document.getElementById("playerColorSection").style.display = "none";
   document.getElementById("controlsSection").style.display = "none";
   document.getElementById("results").style.display = "block";
@@ -992,6 +1245,7 @@ function startNextRound() {{
   setTargetBoxColor();
   adjustStartTime = null;
   currentRoundInitialHSV = null;
+  stopTargetTimer();
   updateRoundIndicators();
 
   document.getElementById("countdownPhase").style.display = "block";
@@ -1006,6 +1260,7 @@ function startNextRound() {{
 
   document.getElementById("playerColorSection").style.display = "flex";
   document.getElementById("controlsSection").style.display = "flex";
+  document.getElementById("leaderboardScreen").style.display = "none";
 
   startCountdown();
 }}
@@ -1033,6 +1288,7 @@ async function showFinalSummary() {{
     session_id: sessionId,
     session_start_timestamp: currentSessionStartTimestamp,
     session_end_timestamp: sessionEndTimestamp,
+    game_mode: gameMode,
     total_rounds: TOTAL_ROUNDS,
     completed_rounds: roundResults.length,
     completed_game: completedGameValue,
@@ -1043,75 +1299,59 @@ async function showFinalSummary() {{
   }};
 
   sessionResults = [sessionRow];
+  lastCompletedGameRow = sessionRow;
   roundResults = roundResults.map(r => ({{
     ...r,
     completed_game: completedGameValue
   }}));
 
   document.getElementById("playerNameFinal").textContent = `Player: ${{playerName}}`;
+  document.getElementById("gameModeFinal").textContent =
+    `Mode: ${{gameMode.charAt(0).toUpperCase() + gameMode.slice(1)}}`;
   document.getElementById("finalStats").textContent =
-    `Total: ${{totalScore.toFixed(2)}} • Average: ${{avgScore.toFixed(2)}} • Total adjust time: ${{totalTime.toFixed(2)}}s`;
+  `Total: ${{totalScore.toFixed(2)}} • Average: ${{avgScore.toFixed(2)}}`;
 
-  const header = document.createElement("div");
-  header.className = "summary-card";
-  header.innerHTML = `
-    <div class="summary-grid">
-      <div class="summary-head">Round</div>
-      <div class="summary-head">Original</div>
-      <div class="summary-head">Yours</div>
-      <div class="summary-head">Score</div>
-      <div class="summary-head">Time</div>
-    </div>
-  `;
-  summaryRows.appendChild(header);
-
-  roundResults.forEach((r) => {{
+      roundResults.forEach((r) => {{
     const row = document.createElement("div");
     row.className = "summary-card";
+
+    const scoreText = parseFloat(r.score_final).toFixed(2);
+    const comment = roundComment(parseFloat(r.score_final));
+
     row.innerHTML = `
-      <div class="summary-grid">
-        <div class="summary-cell" style="font-weight:800;">${{r.round}}</div>
+      <div class="round-card-top">
+        <div class="round-card-title">Round ${{r.round}}</div>
+        <div class="round-card-score">${{scoreText}} / 10</div>
+        <div class="round-card-subtitle">${{comment}}</div>
+      </div>
 
-        <div class="summary-cell">
-          <div class="mini-swatch-wrap">
-            <div class="mini-swatch-block">
-              <div class="mini-swatch" style="background:${{r.targetHex}};"></div>
-              <div class="compact-color-line">
-                ${{formatHSVSingleLine(r.targetHSV.h, r.targetHSV.s, r.targetHSV.v)}}
-              </div>
-            </div>
-          </div>
+      <div class="combined-color-panel">
+        <div class="combined-color-half" style="background:${{r.targetHex}};">
+          <div class="combined-color-half-label">Original</div>
         </div>
-
-        <div class="summary-cell">
-          <div class="mini-swatch-wrap">
-            <div class="mini-swatch-block">
-              <div class="mini-swatch" style="background:${{r.playerHex}};"></div>
-              <div class="compact-color-line">
-                ${{formatHSVSingleLine(r.guessHSV.h, r.guessHSV.s, r.guessHSV.v)}}
-              </div>
-            </div>
-          </div>
+        <div class="combined-color-half" style="background:${{r.playerHex}};">
+          <div class="combined-color-half-label">Yours</div>
         </div>
-
-        <div class="summary-cell" style="font-weight:700;">${{parseFloat(r.score_final).toFixed(2)}}</div>
-        <div class="summary-cell">${{parseFloat(r.elapsed_seconds).toFixed(2)}}s</div>
       </div>
     `;
     summaryRows.appendChild(row);
   }});
 
-  prepareTsvDownloads();
   document.getElementById("finalSummary").style.display = "block";
 
   if (!resultsSaved) {{
     await saveSessionToGoogleSheets(sessionRow);
   }}
+
+  loadLeaderboardData(true).catch((err) => {{
+    console.error("Leaderboard prefetch failed:", err);
+  }});
 }}
 
 function resetGame() {{
   if (countdownInterval) clearInterval(countdownInterval);
   if (revealTimeout) clearTimeout(revealTimeout);
+  stopTargetTimer(); 
 
   currentRound = 1;
   roundResults = [];
@@ -1124,6 +1364,9 @@ function resetGame() {{
   currentSessionStartTimestamp = "";
   resultsSaved = false;
   savedRoundIds = new Set();
+  lastCompletedGameRow = null;
+  leaderboardDataCache = null;
+  leaderboardFetchPromise = null;
 
   document.getElementById("startScreen").style.display = "flex";
   document.getElementById("gameContainer").style.display = "none";
@@ -1136,7 +1379,9 @@ function resetGame() {{
   document.getElementById("resultsActionArea").style.display = "none";
   document.getElementById("finalSummary").style.display = "none";
   document.getElementById("playActionArea").style.display = "none";
-  document.getElementById("saveStatus").textContent = "";
+  document.getElementById("gameModeFinal").textContent = "";
+  document.getElementById("leaderboardRankDisplay").textContent = "";
+  document.getElementById("leaderboardScreen").style.display = "none";
 
   updateRoundIndicators();
 }}
@@ -1166,6 +1411,10 @@ function beginGame() {{
   currentSessionStartTimestamp = nowIso();
   resultsSaved = false;
   savedRoundIds = new Set();
+  lastCompletedGameRow = null;
+  leaderboardDataCache = null;
+  leaderboardFetchPromise = null;
+  stopTargetTimer();
   updateRoundIndicators();
 
   document.getElementById("startScreen").style.display = "none";
@@ -1179,13 +1428,25 @@ function beginGame() {{
   document.getElementById("resultsActionArea").style.display = "none";
   document.getElementById("finalSummary").style.display = "none";
   document.getElementById("playActionArea").style.display = "none";
-  document.getElementById("saveStatus").textContent = "";
+  document.getElementById("leaderboardScreen").style.display = "none";
 
   startCountdown();
 }}
 
 function setRandomColor() {{
-  const h = Math.random() * 360;
+  const MIN_HUE_DISTANCE = GAME_MODES[gameMode].minHueDistance;
+
+  let h, hNorm;
+  const targetDeg = targetHSV.h * 360;
+
+  do {{
+    h = Math.random() * 360;
+    let diff = Math.abs(h - targetDeg);
+    if (diff > 180) diff = 360 - diff;
+    
+    if (diff >= MIN_HUE_DISTANCE) break;
+  }} while (true);
+
   const s = 15 + Math.random() * 85;
   const v = 15 + Math.random() * 85;
 
@@ -1237,7 +1498,6 @@ function handleSliderInput() {{
   updateColor();
   updateSliderBackgrounds();
 }}
-
 document.getElementById("h").addEventListener("input", handleSliderInput);
 document.getElementById("s").addEventListener("input", handleSliderInput);
 document.getElementById("v").addEventListener("input", handleSliderInput);
@@ -1250,6 +1510,61 @@ document.getElementById("playerNameInput").addEventListener("keydown", (e) => {{
 document.getElementById("playerNameInput").addEventListener("input", () => {{
   document.getElementById("startValidation").textContent = "";
 }});
+document.getElementById("openLeaderboardBtn").addEventListener("click", showLeaderboard);
+document.getElementById("backToFinalBtn").addEventListener("click", backToFinalResults);
+document.getElementById("restartFromLeaderboardBtn").addEventListener("click", resetGame);
+
+// 👇 ADD THIS BELOW
+
+document.getElementById("modeEasy").addEventListener("click", () => {{
+  gameMode = "easy";
+  document.getElementById("modeEasy").style.background = "#ffffff";
+  document.getElementById("modeEasy").style.color = "black";
+  document.getElementById("modeHard").style.background = "#333";
+  document.getElementById("modeHard").style.color = "white";
+}});
+
+document.getElementById("modeHard").addEventListener("click", () => {{
+  gameMode = "hard";
+  document.getElementById("modeHard").style.background = "#ffffff";
+  document.getElementById("modeHard").style.color = "black";
+  document.getElementById("modeEasy").style.background = "#333";
+  document.getElementById("modeEasy").style.color = "white";
+}});
+
+function stopTargetTimer() {{
+  if (targetTimerInterval) {{
+    clearInterval(targetTimerInterval);
+    targetTimerInterval = null;
+  }}
+
+  const timerEl = document.getElementById("targetTimer");
+  if (timerEl) {{
+    timerEl.style.display = "none";
+  }}
+}}
+
+function startTargetTimer(durationMs) {{
+  stopTargetTimer();
+
+  const timerEl = document.getElementById("targetTimer");
+  if (!timerEl) return;
+
+  targetRevealEndTime = performance.now() + durationMs;
+  timerEl.style.display = "block";
+
+  function renderTimer() {{
+    const remainingMs = Math.max(0, targetRevealEndTime - performance.now());
+    timerEl.textContent = (remainingMs / 1000).toFixed(3);
+
+    if (remainingMs <= 0) {{
+      stopTargetTimer();
+    }}
+  }}
+
+  renderTimer();
+  targetTimerInterval = setInterval(renderTimer, 16);
+}}
 
 function startCountdown() {{
   let count = 3;
@@ -1271,24 +1586,35 @@ function startCountdown() {{
       targetPhase.style.display = "block";
       setTargetBoxColor();
 
+      const revealMs = GAME_MODES[gameMode].revealMs;
+
+      startTargetTimer(revealMs);
+
       revealTimeout = setTimeout(() => {{
         revealTimeout = null;
+        stopTargetTimer();
 
+        // hide target
         targetPhase.style.display = "none";
-        document.getElementById("playPhase").style.display = "flex";
-        document.getElementById("playerColorSection").style.display = "flex";
-        document.getElementById("controlsSection").style.display = "flex";
-        document.getElementById("results").style.display = "none";
-        document.getElementById("resultsActionArea").style.display = "none";
-        document.getElementById("finalSummary").style.display = "none";
 
-        document.getElementById("playActionArea").style.display = "flex";
+        // delay before sliders
+        setTimeout(() => {{
+          document.getElementById("playPhase").style.display = "flex";
+          document.getElementById("playerColorSection").style.display = "flex";
+          document.getElementById("controlsSection").style.display = "flex";
+          document.getElementById("results").style.display = "none";
+          document.getElementById("resultsActionArea").style.display = "none";
+          document.getElementById("finalSummary").style.display = "none";
 
-        setRandomColor();
-        updateColor();
-        updateSliderBackgrounds();
-        adjustStartTime = performance.now();
-      }}, 5000);
+          document.getElementById("playActionArea").style.display = "flex";
+
+          setRandomColor();
+          updateColor();
+          updateSliderBackgrounds();
+          adjustStartTime = performance.now();
+        }}, 500);
+
+      }}, revealMs);
     }}
   }}, 1000);
 }}
@@ -1296,10 +1622,216 @@ function startCountdown() {{
 sessionId = generateSessionId();
 updateRoundIndicators();
 setTargetBoxColor();
+
+async function fetchLeaderboard() {{
+  const params = new URLSearchParams();
+  params.set("type", "leaderboard");
+
+  if (lastCompletedGameRow) {{
+    params.set("session_id", lastCompletedGameRow.session_id || "");
+    params.set("game_mode", lastCompletedGameRow.game_mode || "");
+    params.set("total_score", lastCompletedGameRow.total_score || "");
+  }}
+
+  const response = await fetch(`${{APPS_SCRIPT_URL}}?${{params.toString()}}`);
+  const text = await response.text();
+
+  let data = null;
+  try {{
+    data = JSON.parse(text);
+  }} catch (err) {{
+    throw new Error("Invalid leaderboard response: " + text);
+  }}
+
+  if (!response.ok || !data.ok) {{
+    throw new Error(data && data.error ? data.error : "Could not load leaderboard");
+  }}
+
+  return data;
+}}
+
+async function loadLeaderboardData(forceRefresh = false) {{
+  if (!forceRefresh && leaderboardDataCache) {{
+    return leaderboardDataCache;
+  }}
+
+  if (!forceRefresh && leaderboardFetchPromise) {{
+    return leaderboardFetchPromise;
+  }}
+
+  leaderboardFetchPromise = fetchLeaderboard()
+    .then((data) => {{
+      leaderboardDataCache = data;
+      leaderboardFetchPromise = null;
+      return data;
+    }})
+    .catch((err) => {{
+      leaderboardFetchPromise = null;
+      throw err;
+    }});
+
+  return leaderboardFetchPromise;
+}}
+
+function getRankLabel(index) {{
+  const medals = ["&#129351;", "&#129352;", "&#129353;"];
+  return medals[index] || `#${{index + 1}}`;
+}}
+
+function getRankedModeRows(rows, modeKey) {{
+  return rows
+    .filter((row) => String(row.game_mode || "").trim().toLowerCase() === modeKey)
+    .sort((a, b) => parseFloat(b.total_score || 0) - parseFloat(a.total_score || 0));
+}}
+
+function getRowsWithCurrentGame(rows, gameRow) {{
+  const currentSessionId = String(gameRow.session_id || "");
+  const otherRows = rows.filter((row) => String(row.session_id || "") !== currentSessionId);
+  return [...otherRows, gameRow];
+}}
+
+function updateLeaderboardRank(data) {{
+  const el = document.getElementById("leaderboardRankDisplay");
+  if (!el) return;
+
+  if (!lastCompletedGameRow) {{
+    el.textContent = "";
+    return;
+  }}
+
+  if (data.currentRank && data.currentModeTotalGames) {{
+    const modeKey = String(data.currentMode || lastCompletedGameRow.game_mode || "").trim().toLowerCase();
+    el.textContent =
+      `You came in #${{data.currentRank}} out of ${{data.currentModeTotalGames}} games played so far in ${{modeKey}} mode!`;
+    return;
+  }}
+
+  const fallbackRows = Array.isArray(data.rows) ? data.rows : [];
+  if (!fallbackRows.length) {{
+    el.textContent = "Rank unavailable right now.";
+    return;
+  }}
+
+  const modeKey = String(lastCompletedGameRow.game_mode || "").trim().toLowerCase();
+  const rankedRows = getRankedModeRows(getRowsWithCurrentGame(fallbackRows, lastCompletedGameRow), modeKey);
+  const rankIndex = rankedRows.findIndex((row) =>
+    String(row.session_id || "") === String(lastCompletedGameRow.session_id || "")
+  );
+
+  if (rankIndex === -1) {{
+    el.textContent = "Rank unavailable right now.";
+    return;
+  }}
+
+  el.textContent =
+    `You came in #${{rankIndex + 1}} out of ${{rankedRows.length}} games played so far in ${{modeKey}} mode!`;
+}}
+
+function getTopLeaderboardRows(rows, modeKey) {{
+  return getRankedModeRows(rows, modeKey).slice(0, 5);
+}}
+
+function escapeHtml(value) {{
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}}
+
+function renderLeaderboard(data) {{
+  const table = document.getElementById("leaderboardTable");
+  table.innerHTML = "";
+
+  const fallbackRows = Array.isArray(data.rows) ? data.rows : [];
+  const easyRows = Array.isArray(data.easyTop5)
+    ? data.easyTop5
+    : getTopLeaderboardRows(fallbackRows, "easy");
+  const hardRows = Array.isArray(data.hardTop5)
+    ? data.hardTop5
+    : getTopLeaderboardRows(fallbackRows, "hard");
+
+  if (!easyRows.length && !hardRows.length) {{
+    table.innerHTML = `<div class="leaderboard-empty">No leaderboard data yet.</div>`;
+    return;
+  }}
+
+  const modes = [
+    {{ key: "easy", label: "Easy mode", rows: easyRows }},
+    {{ key: "hard", label: "Hard mode", rows: hardRows }}
+  ];
+
+  modes.forEach((mode) => {{
+    const section = document.createElement("div");
+    section.className = "leaderboard-section";
+
+    const title = document.createElement("div");
+    title.className = "leaderboard-mode-title";
+    title.textContent = mode.label;
+    section.appendChild(title);
+
+    const modeRows = mode.rows;
+
+    if (!modeRows.length) {{
+      const empty = document.createElement("div");
+      empty.className = "leaderboard-empty";
+      empty.textContent = `No ${{mode.key}} scores yet.`;
+      section.appendChild(empty);
+      table.appendChild(section);
+      return;
+    }}
+
+    modeRows.forEach((row, index) => {{
+      const item = document.createElement("div");
+      item.className = "leaderboard-row";
+
+      const name = row.participant_id || "Anonymous";
+      const score = parseFloat(row.total_score || 0).toFixed(2);
+      const rankLabel = getRankLabel(index);
+
+      item.innerHTML = `
+        <div class="leaderboard-rank">${{rankLabel}}</div>
+        <div class="leaderboard-name">${{escapeHtml(name)}}</div>
+        <div class="leaderboard-score">${{score}}</div>
+      `;
+
+      section.appendChild(item);
+    }});
+
+    table.appendChild(section);
+  }});
+}}
+
+async function showLeaderboard() {{
+  document.getElementById("finalSummary").style.display = "none";
+  document.getElementById("leaderboardScreen").style.display = "block";
+
+  const table = document.getElementById("leaderboardTable");
+  const rankDisplay = document.getElementById("leaderboardRankDisplay");
+  table.innerHTML = `<div class="leaderboard-empty">Loading leaderboard...</div>`;
+  rankDisplay.textContent = lastCompletedGameRow ? "Checking your rank..." : "";
+
+  try {{
+    const data = await loadLeaderboardData();
+    renderLeaderboard(data);
+    updateLeaderboardRank(data);
+  }} catch (err) {{
+    console.error(err);
+    rankDisplay.textContent = lastCompletedGameRow ? "Rank unavailable right now." : "";
+    table.innerHTML = `<div class="leaderboard-empty">Could not load leaderboard.</div>`;
+  }}
+}}
+
+function backToFinalResults() {{
+  document.getElementById("leaderboardScreen").style.display = "none";
+  document.getElementById("finalSummary").style.display = "block";
+}}
+
 </script>
 """
 
 left_spacer, main_col, right_spacer = st.columns([1.6, 6, 1.0])
 
 with main_col:
-    components.html(html, height=1820)
+    components.html(html, height=1350)
