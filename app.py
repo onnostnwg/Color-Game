@@ -495,6 +495,7 @@ let sessionId = "";
 let currentRoundInitialHSV = null;
 let currentSessionStartTimestamp = "";
 let resultsSaved = false;
+let savedRoundIds = new Set();
 
 function generateSessionId() {{
   return "S_" + Date.now() + "_" + Math.random().toString(36).slice(2, 10);
@@ -778,6 +779,7 @@ function prepareTsvDownloads() {{
   const roundColumns = [
     "participant_id",
     "session_id",
+    "round_id",
     "session_start_timestamp",
     "round_timestamp",
     "round_number",
@@ -837,42 +839,62 @@ function setSaveStatus(text) {{
   document.getElementById("saveStatus").textContent = text;
 }}
 
-async function saveResultsToGoogleSheets(gameRow, roundRows) {{
-  setSaveStatus("Saving results to Google Sheets...");
+async function postJsonPayload(payload) {{
+  const response = await fetch(APPS_SCRIPT_URL, {{
+    method: "POST",
+    headers: {{
+      "Content-Type": "text/plain;charset=utf-8"
+    }},
+    body: JSON.stringify(payload)
+  }});
 
-  const payload = {{
-    type: "batch",
-    game: gameRow,
-    rounds: roundRows
-  }};
+  const text = await response.text();
+  let data = null;
 
   try {{
-    const response = await fetch(APPS_SCRIPT_URL, {{
-      method: "POST",
-      headers: {{
-        "Content-Type": "text/plain;charset=utf-8"
-      }},
-      body: JSON.stringify(payload)
+    data = JSON.parse(text);
+  }} catch (err) {{
+    throw new Error("Non-JSON response: " + text);
+  }}
+
+  if (!response.ok || !data.ok) {{
+    throw new Error(data && data.error ? data.error : "Unknown save error");
+  }}
+
+  return data;
+}}
+
+async function saveRoundToGoogleSheets(roundRow) {{
+  if (!roundRow || !roundRow.round_id) return;
+  if (savedRoundIds.has(roundRow.round_id)) return;
+
+  try {{
+    await postJsonPayload({{
+      type: "round",
+      round: roundRow
     }});
 
-    const text = await response.text();
-    let data = null;
+    savedRoundIds.add(roundRow.round_id);
+    console.log(`Round ${{roundRow.round_number}} saved.`);
+  }} catch (err) {{
+    console.error("Round save failed:", err);
+  }}
+}}
 
-    try {{
-      data = JSON.parse(text);
-    }} catch (err) {{
-      throw new Error("Non-JSON response: " + text);
-    }}
+async function saveSessionToGoogleSheets(gameRow) {{
+  setSaveStatus("Saving final game summary...");
 
-    if (!response.ok || !data.ok) {{
-      throw new Error(data && data.error ? data.error : "Unknown save error");
-    }}
+  try {{
+    await postJsonPayload({{
+      type: "game",
+      game: gameRow
+    }});
 
     resultsSaved = true;
-    setSaveStatus("Saved to Google Sheets.");
+    setSaveStatus("Final game summary saved.");
   }} catch (err) {{
     console.error(err);
-    setSaveStatus("Could not save to Google Sheets. Files are still available for download.");
+    setSaveStatus("Could not save final summary. Files are still available for download.");
   }}
 }}
 
@@ -891,10 +913,12 @@ function saveRoundResult() {{
 
   const targetHex = hsvToHex(targetHSV.h, targetHSV.s, targetHSV.v);
   const playerHex = hsvToHex(h, s, v);
+  const roundId = `${{sessionId}}_R${{currentRound}}`;
 
   const row = {{
     participant_id: playerName,
     session_id: sessionId,
+    round_id: roundId,
     session_start_timestamp: currentSessionStartTimestamp,
     round_timestamp: nowIso(),
     round_number: currentRound,
@@ -932,8 +956,9 @@ function saveRoundResult() {{
   return row;
 }}
 
-function showResults() {{
+async function showResults() {{
   const roundData = saveRoundResult();
+  await saveRoundToGoogleSheets(roundData);
 
   document.getElementById("playActionArea").style.display = "none";
   document.getElementById("targetColorBox").style.background = roundData.targetHex;
@@ -1080,7 +1105,7 @@ async function showFinalSummary() {{
   document.getElementById("finalSummary").style.display = "block";
 
   if (!resultsSaved) {{
-    await saveResultsToGoogleSheets(sessionRow, roundResults);
+    await saveSessionToGoogleSheets(sessionRow);
   }}
 }}
 
@@ -1098,6 +1123,7 @@ function resetGame() {{
   sessionId = generateSessionId();
   currentSessionStartTimestamp = "";
   resultsSaved = false;
+  savedRoundIds = new Set();
 
   document.getElementById("startScreen").style.display = "flex";
   document.getElementById("gameContainer").style.display = "none";
@@ -1139,6 +1165,7 @@ function beginGame() {{
   sessionId = generateSessionId();
   currentSessionStartTimestamp = nowIso();
   resultsSaved = false;
+  savedRoundIds = new Set();
   updateRoundIndicators();
 
   document.getElementById("startScreen").style.display = "none";
