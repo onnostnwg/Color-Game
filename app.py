@@ -452,6 +452,20 @@ input[type=range]::-moz-range-thumb {{
     font-size: 15px;
   }}
 
+  #targetBox,
+  #preview {{
+    width: min(240px, 74vw) !important;
+    height: min(240px, 74vw) !important;
+  }}
+
+  #playerColorSection {{
+    width: min(240px, 74vw) !important;
+  }}
+
+  #targetPhase {{
+    margin-top: 12px !important;
+  }}
+
   .round-overlay {{
     left: 8px;
   }}
@@ -1892,4 +1906,4 @@ function backToFinalResults() {{
 left_spacer, main_col, right_spacer = st.columns([1.6, 6, 1.0])
 
 with main_col:
-    components.html(html, height=980, scrolling=False)
+    components.html(html, height=840, scrolling=False)
