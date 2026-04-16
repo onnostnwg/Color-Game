@@ -21,17 +21,6 @@ html,
 body {{
   margin: 0;
   padding: 0;
-  overflow: hidden;
-}}
-
-#appViewport {{
-  height: 100vh;
-  min-height: 620px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scroll-behavior: auto;
-  box-sizing: border-box;
-  padding-bottom: 24px;
 }}
 
 .timer-overlay {{
@@ -451,9 +440,36 @@ input[type=range]::-moz-range-thumb {{
 }}
 
 @media (max-width: 520px) {{
+  #appRoot {{
+    gap: 14px !important;
+  }}
+
+  #gameContainer {{
+    gap: 16px !important;
+  }}
+
+  .start-screen {{
+    margin-top: 36px;
+    gap: 12px;
+  }}
+
+  .start-title {{
+    font-size: 28px;
+  }}
+
   .primary-btn {{
     padding: 11px 14px;
     font-size: 15px;
+  }}
+
+  #countdownPhase {{
+    font-size: 72px !important;
+    margin-top: 40px !important;
+  }}
+
+  #targetPhase,
+  #playPhase {{
+    margin-top: 8px !important;
   }}
 
   .round-overlay,
@@ -465,16 +481,45 @@ input[type=range]::-moz-range-thumb {{
 
   #targetBox,
   #preview {{
-    width: min(240px, 74vw) !important;
-    height: min(240px, 74vw) !important;
+    width: min(220px, 70vw) !important;
+    height: min(220px, 70vw) !important;
   }}
 
   #playerColorSection {{
-    width: min(240px, 74vw) !important;
+    width: min(220px, 70vw) !important;
   }}
 
-  #targetPhase {{
-    margin-top: 12px !important;
+  #controlsSection {{
+    width: min(360px, 88vw) !important;
+    gap: 10px !important;
+  }}
+
+  .label-row {{
+    margin-bottom: 4px;
+    font-size: 13px;
+  }}
+
+  input[type=range] {{
+    height: 14px;
+  }}
+
+  input[type=range]::-webkit-slider-runnable-track {{
+    height: 14px;
+  }}
+
+  input[type=range]::-webkit-slider-thumb {{
+    width: 24px;
+    height: 24px;
+    margin-top: -5px;
+  }}
+
+  input[type=range]::-moz-range-track {{
+    height: 14px;
+  }}
+
+  input[type=range]::-moz-range-thumb {{
+    width: 24px;
+    height: 24px;
   }}
 
   .round-overlay {{
@@ -491,6 +536,14 @@ input[type=range]::-moz-range-thumb {{
 
   .summary-card {{
     padding: 14px;
+  }}
+
+  .combined-color-half {{
+    height: 64px;
+  }}
+
+  #results {{
+    padding: 18px 14px 16px 14px !important;
   }}
 
   .leaderboard-row {{
@@ -519,7 +572,6 @@ input[type=range]::-moz-range-thumb {{
 
 </style>
 
-<div id="appViewport">
 <div id="appRoot" style="font-family:sans-serif; display:flex; flex-direction:column; align-items:center; gap:24px; color:white;">
 
   <div id="startScreen" class="start-screen">
@@ -810,7 +862,6 @@ input[type=range]::-moz-range-thumb {{
     </div>
   </div>
 </div>
-</div>
 
 <script>
 const TOTAL_ROUNDS = 5;
@@ -858,45 +909,8 @@ function resizeStreamlitFrame() {{
   }}, 40);
 }}
 
-function scrollGameToTop() {{
-  const viewport = document.getElementById("appViewport");
-  if (viewport) {{
-    viewport.scrollTop = 0;
-    viewport.scrollTo({{ top: 0, left: 0, behavior: "auto" }});
-  }}
-
-  window.scrollTo({{ top: 0, left: 0, behavior: "auto" }});
-
-  try {{
-    if (window.frameElement) {{
-      window.frameElement.scrollIntoView({{ block: "start", inline: "nearest", behavior: "auto" }});
-    }}
-  }} catch (err) {{}}
-
-  try {{
-    const parentDoc = window.parent.document;
-    const frame = window.frameElement;
-    if (frame) {{
-      frame.scrollIntoView({{ block: "start", inline: "nearest", behavior: "auto" }});
-    }}
-    parentDoc.documentElement.scrollTop = 0;
-    parentDoc.body.scrollTop = 0;
-    window.parent.scrollTo({{ top: 0, left: 0, behavior: "auto" }});
-  }} catch (err) {{
-    window.parent.postMessage({{
-      isStreamlitMessage: true,
-      type: "streamlit:scrollTo",
-      top: 0
-    }}, "*");
-  }}
-}}
-
 function resetViewportForPhase() {{
-  scrollGameToTop();
   resizeStreamlitFrame();
-  setTimeout(scrollGameToTop, 60);
-  setTimeout(scrollGameToTop, 180);
-  setTimeout(scrollGameToTop, 360);
   setTimeout(resizeStreamlitFrame, 80);
   setTimeout(resizeStreamlitFrame, 220);
 }}
@@ -1962,4 +1976,4 @@ function backToFinalResults() {{
 left_spacer, main_col, right_spacer = st.columns([1.6, 6, 1.0])
 
 with main_col:
-    components.html(html, height=720, scrolling=False)
+    components.html(html, height=760, scrolling=False)
