@@ -862,11 +862,25 @@ function scrollGameToTop() {{
   const viewport = document.getElementById("appViewport");
   if (viewport) {{
     viewport.scrollTop = 0;
+    viewport.scrollTo({{ top: 0, left: 0, behavior: "auto" }});
   }}
 
   window.scrollTo({{ top: 0, left: 0, behavior: "auto" }});
 
   try {{
+    if (window.frameElement) {{
+      window.frameElement.scrollIntoView({{ block: "start", inline: "nearest", behavior: "auto" }});
+    }}
+  }} catch (err) {{}}
+
+  try {{
+    const parentDoc = window.parent.document;
+    const frame = window.frameElement;
+    if (frame) {{
+      frame.scrollIntoView({{ block: "start", inline: "nearest", behavior: "auto" }});
+    }}
+    parentDoc.documentElement.scrollTop = 0;
+    parentDoc.body.scrollTop = 0;
     window.parent.scrollTo({{ top: 0, left: 0, behavior: "auto" }});
   }} catch (err) {{
     window.parent.postMessage({{
@@ -881,7 +895,10 @@ function resetViewportForPhase() {{
   scrollGameToTop();
   resizeStreamlitFrame();
   setTimeout(scrollGameToTop, 60);
+  setTimeout(scrollGameToTop, 180);
+  setTimeout(scrollGameToTop, 360);
   setTimeout(resizeStreamlitFrame, 80);
+  setTimeout(resizeStreamlitFrame, 220);
 }}
 
 window.addEventListener("load", resizeStreamlitFrame);
